@@ -647,7 +647,13 @@ body.day .ans.sel{background:rgba(10,132,255,.14)}
 }
 .dots .d:hover{transform:scale(1.12)}
 .dots .d.cur{background:var(--gyellow);border-color:transparent;color:#1c1c1e;box-shadow:0 4px 14px rgba(251,188,5,.45)}
-.dots .d.ans:not(.cur){border-color:var(--accent);color:var(--accent)}
+/* статус ответа: жёлтый = не отвечен, зелёный = верно, красный = неверно */
+.dots .d.pend:not(.cur){border-color:rgba(253,209,99,.75);color:var(--warn)}
+.dots .d.ok{border-color:rgba(129,201,149,.85);color:var(--good);background:rgba(129,201,149,.14)}
+.dots .d.no{border-color:rgba(242,139,130,.85);color:var(--bad);background:rgba(242,139,130,.14)}
+.dots .d.ok.cur{background:var(--good);border-color:transparent;color:#1c1c1e;box-shadow:0 4px 14px rgba(129,201,149,.45)}
+.dots .d.no.cur{background:var(--bad);border-color:transparent;color:#1c1c1e;box-shadow:0 4px 14px rgba(242,139,130,.45)}
+.dots .d.pend.cur{background:var(--gyellow);border-color:transparent;color:#1c1c1e;box-shadow:0 4px 14px rgba(251,188,5,.45)}
 /* ---- нижняя панель навигации по вопросам: во всю ширину экрана ----
    Показывается в режиме теста и на ПК, и на мобильных. */
 .bottombar{
@@ -1189,6 +1195,6 @@ body.day .sidemenu .mitem:hover .ico{ filter:drop-shadow(0 0 5px rgba(10,132,255
 <div class="bottombar" id="bottombar"><div class="dots" id="dotsMobile"></div></div>
 
 <script src="data.js"></script>
-<script src="app.js?v=202611102347"></script>
+<script src="app.js?v=202611110037"></script>
 </body>
 </html>

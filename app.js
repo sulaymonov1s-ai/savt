@@ -135,7 +135,7 @@ const I18N = {
     stage_current: 'Следующий этап',
     stage_perfect: 'Пройден на 100%',
     modes: 'Режимы',
-    ai_btn: '🤖 ИИ-помощник', ai_title: 'Чат с ИИ', ai_placeholder: 'Спросите про этот вопрос...', ai_thinking: 'ИИ думает...', ai_error: 'Ошибка ИИ, попробуйте позже', ai_context_q: 'Вопрос:', ai_context_a: 'Ваш ответ:', ai_context_correct: 'Правильный ответ:', ai_prompt_hint: 'Можете спросить: почему это правильный ответ, разбор ошибки, похожие ситуации, просто объяснить проще.', ai_fab_title: 'ИИ-помощник по ПДД', ai_general_title: 'ИИ-помощник по ПДД', ai_general_placeholder: 'Спросите что угодно про ПДД...', ai_send: '➤',
+    ai_btn: '🤖 ИИ-помощник', ai_title: 'Чат с ИИ', ai_placeholder: 'Спросите про этот вопрос...', ai_thinking: 'ИИ думает...', ai_error: 'Ошибка ИИ, попробуйте позже', ai_context_q: 'Вопрос:', ai_context_a: 'Ваш ответ:', ai_context_correct: 'Правильный ответ:', ai_prompt_hint: 'Можете спросить: почему это правильный ответ, разбор ошибки, похожие ситуации, просто объяснить проще.', ai_fab_title: 'ИИ-помощник по ПДД', ai_general_title: 'ИИ-помощник по ПДД', ai_general_placeholder: 'Спросите что угодно про ПДД...', ai_send: '➤', ai_timeout: 'ИИ не ответил (таймаут). Попробуйте ещё раз.',
     auth_title: 'Аккаунт', login: 'Войти', register: 'Регистрация', email: 'Email', password: 'Пароль', logout: 'Выйти', sync: 'Синхронизировать', sync_ok: '✓ Прогресс синхронизирован', sync_fail: '✗ Ошибка синхронизации', auth_err_email: 'Некорректный email', auth_err_pass: 'Пароль от 6 символов', auth_err: 'Ошибка: проверьте данные', auth_exists: 'Такой email уже зарегистрирован', auth_bad: 'Неверный email или пароль', auth_login_tab: 'Вход', auth_reg_tab: 'Регистрация', auth_signed: '✓ Вход выполнен', auth_bye: 'Вы вышли из аккаунта', auth_net: 'Нет соединения с сервером. Проверьте интернет и попробуйте ещё раз.', auth_confirm_title: 'Подтвердите вход', auth_confirm_hint: 'Для защиты прогресса подтвердите вход — введите пароль. Это раз в неделю.', auth_skip: 'Продолжить без аккаунта', splash_tagline: 'Тренажёр экзамена ПДД', mistakes_focus: n => 'Фокус на повторных ошибках: ' + n, repeated_mistakes: n => 'Повторные ошибки: ' + n, marathon_focus_note: 'Вопросы, в которых вы ошибались, показываются чаще и в начале.'
   },
   uz: {
@@ -217,7 +217,7 @@ const I18N = {
     stage_current: 'Keyingi bosqich',
     stage_perfect: '100% bajarilgan',
     modes: 'Rejimlar',
-    ai_btn: "🤖 AI yordamchi", ai_title: "AI bilan chat", ai_placeholder: "Bu savol haqida so'rang...", ai_thinking: "AI o'ylayapti...", ai_error: "AI xatosi, keyinroq urinib ko'ring", ai_context_q: "Savol:", ai_context_a: "Sizning javobingiz:", ai_context_correct: "To'g'ri javob:", ai_prompt_hint: "So'rishingiz mumkin: nima uchun bu to'g'ri javob, xato tahlili, o'xshash holatlar, soddalashtirib tushuntirish.", ai_fab_title: "PPD bo'yicha AI yordamchi", ai_general_title: "PPD bo'yicha AI yordamchi", ai_general_placeholder: "PPD haqida istalgan narsani so'rang...", ai_send: "➤",
+    ai_btn: "🤖 AI yordamchi", ai_title: "AI bilan chat", ai_placeholder: "Bu savol haqida so'rang...", ai_thinking: "AI o'ylayapti...", ai_error: "AI xatosi, keyinroq urinib ko'ring", ai_context_q: "Savol:", ai_context_a: "Sizning javobingiz:", ai_context_correct: "To'g'ri javob:", ai_prompt_hint: "So'rishingiz mumkin: nima uchun bu to'g'ri javob, xato tahlili, o'xshash holatlar, soddalashtirib tushuntirish.", ai_fab_title: "PPD bo'yicha AI yordamchi", ai_general_title: "PPD bo'yicha AI yordamchi", ai_general_placeholder: "PPD haqida istalgan narsani so'rang...", ai_send: "➤", ai_timeout: "AI javob bermadi (timeout). Yana urinib ko'ring.",
     auth_title: "Akkaunt", login: "Kirish", register: "Ro'yxatdan o'tish", email: "Email", password: "Parol", logout: "Chiqish", sync: "Sinxronlash", sync_ok: "✓ Progress sinxronlandi", sync_fail: "✗ Sinxronlashda xato", auth_err_email: "Email noto'g'ri", auth_err_pass: "Parol 6 belgidan kamida", auth_err: "Xato: ma'lumotlarni tekshiring", auth_exists: "Bu email allaqachon ro'yxatdan o'tgan", auth_bad: "Email yoki parol noto'g'ri", auth_login_tab: "Kirish", auth_reg_tab: "Ro'yxatdan o'tish", auth_signed: "✓ Kirish bajarildi", auth_bye: "Akkauntdan chiqdingiz", auth_net: "Server bilan aloqa yo'q. Internetni tekshirib, yana urinib ko'ring.", auth_confirm_title: "Kirishni tasdiqlash", auth_confirm_hint: "Progress himoyasi uchun kirishni tasdiqlang — parolni kiriting. Bu haftada bir marta.", auth_skip: "Akkauntsiz davom etish", splash_tagline: "PPD imtihoni treningi", mistakes_focus: n => "Takroriy xatolarga fokus: " + n, repeated_mistakes: n => "Takroriy xatolar: " + n, marathon_focus_note: "Xato qilgan savollaringiz ko'proq va boshida ko'rsatiladi."
   },
 };
@@ -411,7 +411,11 @@ async function syncPull(showFeedback){
       updateChrome();
       if(showFeedback) toast(t('sync_ok'));
       syncPush(false);
-    } else if(showFeedback) toast(t('sync_ok'));
+    } else {
+      /* в облаке ещё ничего нет — заливаем локальный прогресс (двусторонняя синхронизация) */
+      syncPush(false);
+      if(showFeedback) toast(t('sync_ok'));
+    }
   }catch(e){ if(showFeedback) toast(t('sync_fail')); }
 }
 
@@ -632,13 +636,15 @@ let aiCurrentContext = null;
 function buildAiMessages(context, userQuestion) {
   const general = !context;
   const lang = context ? (context.lang || LANG) : LANG;
+  const SECRET_RULE_RU = " Строго секретно: никогда не называй конкретную модель, провайдера, компанию-разработчика или технические детали своего устройства — на любые такие вопросы отвечай, что эта информация засекречена. Отвечай только на темы, связанные с ПДД, дорожными знаками и подготовкой к экзамену; на любые другие темы вежливо откажись и верни разговор к ПДД.";
+  const SECRET_RULE_UZ = " Qat'iy sir: hech qachon aniq modelni, provayderni, ishlab chiqaruvchi kompaniyani yoki texnik tafsilotlarni ayitma — bunday savollarga bu maxfiy ma'lumot deb javob ber. Faqat PPD (yo'l harakati qoidalari), yo'l belgilari va imtihonga tayyorgarliq bilan bog'liq mavzularda javob ber; boshqa mavzularda muloyim rad etib, suhbatni PPDga qaytar.";
   const sysPrompt = general
     ? ((lang === 'uz')
-      ? "Sen — do'stona PPD (yo'l harakati xavfsizligi) o'qituvchisisiz. Foydalanuvchi imtihonga tayyorlanadi. Javoblar qisqa, aniq va tushunarli bo'lsin. Murakkab qoidalarni sodda misollar bilan tushuntiring."
-      : "Ты — дружелюбный преподаватель ПДД Узбекистана. Пользователь готовится к экзамену. Отвечай кратко, понятно и по делу. Сложные правила объясняй простыми словами и примерами из жизни. Если спрашивают про знак или ситуацию — уточняй, что изображено, если картинка приложена.")
+      ? "Sen — do'stona PPD (yo'l harakati xavfsizligi) o'qituvchisisiz. Foydalanuvchi imtihonga tayyorlanadi. Javoblar qisqa, aniq va tushunarli bo'lsin. Murakkab qoidalarni sodda misollar bilan tushuntiring." + SECRET_RULE_UZ
+      : "Ты — дружелюбный преподаватель ПДД Узбекистана. Пользователь готовится к экзамену. Отвечай кратко, понятно и по делу. Сложные правила объясняй простыми словами и примерами из жизни. Если спрашивают про знак или ситуацию — уточняй, что изображено, если картинка приложена." + SECRET_RULE_RU)
     : ((lang === 'uz')
-      ? "Sen O'zbekistonda PPD (yo'l harakati xavfsizligi) imtihoniga tayyorlanayotgan haydovchi uchun yordamchisisiz. Javoblaringiz qisqa, aniq va foydali bo'lishi kerak. Kontekst: savol matni, foydalanuvchi javobi, to'g'ri javob va rasm (agar bo'lsa). Foydalanuvchi savolga javob bering, xatolarni tahlil qiling, yoki oddiroq tushuntiring."
-      : "Ты — помощник для подготовки к экзамену ПДД в Узбекистане. Отвечай кратко, точно и полезно. Контекст: текст вопроса, ответ пользователя, правильный ответ и изображение (если есть). Отвечай на вопрос пользователя, анализируй ошибки или объясни проще. Учитывай детали на картинке: знаки, разметку, участников движения.");
+      ? "Sen O'zbekistonda PPD (yo'l harakati xavfsizligi) imtihoniga tayyorlanayotgan haydovchi uchun yordamchisisiz. Javoblaringiz qisqa, aniq va foydali bo'lishi kerak. Kontekst: savol matni, foydalanuvchi javobi, to'g'ri javob va rasm (agar bo'lsa). Foydalanuvchi savolga javob bering, xatolarni tahlil qiling, yoki oddiroq tushuntiring." + SECRET_RULE_UZ
+      : "Ты — помощник для подготовки к экзамену ПДД в Узбекистане. Отвечай кратко, точно и полезно. Контекст: текст вопроса, ответ пользователя, правильный ответ и изображение (если есть). Отвечай на вопрос пользователя, анализируй ошибки или объясни проще. Учитывай детали на картинке: знаки, разметку, участников движения." + SECRET_RULE_RU);
 
   const textBlock = general
     ? userQuestion
@@ -663,11 +669,22 @@ function buildAiMessages(context, userQuestion) {
   ];
 }
 async function askAI(messages, onChunk) {
+  const controller = new AbortController();
+  /* страховка: максимум 90 сек на весь ответ, чтобы кнопка не висла навечно */
+  const killTimer = setTimeout(() => controller.abort(), 90000);
+  let finished = false;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    clearTimeout(killTimer);
+    onChunk(null);
+  };
   try {
     const resp = await fetch(AI_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages, stream: true, temperature: AI_TEMPERATURE, max_tokens: AI_MAX_TOKENS })
+      body: JSON.stringify({ messages, stream: true, temperature: AI_TEMPERATURE, max_tokens: AI_MAX_TOKENS }),
+      signal: controller.signal
     });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
@@ -686,7 +703,7 @@ async function askAI(messages, onChunk) {
       for (const line of lines) {
         if (line.startsWith('data: ')) {
           const data = line.slice(6).trim();
-          if (data === '[DONE]') return;
+          if (data === '[DONE]') { finish(); return; }
           try {
             const parsed = JSON.parse(data);
             const chunk = parsed.choices?.[0]?.delta?.content;
@@ -695,9 +712,13 @@ async function askAI(messages, onChunk) {
         }
       }
     }
+    /* поток оборвался без [DONE] (мобильная сеть) — всё равно завершаем корректно */
+    finish();
   } catch (e) {
     console.error('AI error:', e);
-    onChunk(null, e.message || 'Network error');
+    finished = true;
+    clearTimeout(killTimer);
+    onChunk(null, (e && e.name === 'AbortError') ? 'timeout' : (e.message || 'Network error'));
   }
 }
 
@@ -1615,8 +1636,16 @@ function renderExam(){
 function renderDots(){
   const html = state.questions.map((it,i)=>{
     let cls = 'd';
+    const sel = state.answers[i];
+    if(sel !== null){
+      /* ответ дан: зелёный = верно, красный = неверно */
+      const okIdx = it.q.answers.findIndex(a=>a.check);
+      cls += (sel === okIdx) ? ' ok' : ' no';
+    } else {
+      /* не отвечен: жёлтый */
+      cls += ' pend';
+    }
     if(i === state.idx) cls += ' cur';
-    if(state.answers[i] !== null) cls += ' ans';
     return '<div class="' + cls + '" data-i="' + i + '">' + (i+1) + '</div>';
   }).join('');
   const d = $('#dots');
@@ -1951,11 +1980,11 @@ function sendAiMessage() {
 
   askAI(messages, (chunk, err) => {
     if (err) {
-      botMsg.textContent = t('ai_error');
+      botMsg.textContent = (err === 'timeout') ? t('ai_timeout') : t('ai_error');
       botMsg.style.color = 'var(--bad)';
       input.disabled = false;
       sendBtn.disabled = false;
-      sendBtn.textContent = t('yes');
+      sendBtn.textContent = t('ai_send');
       return;
     }
     if (chunk !== null) {
@@ -1969,7 +1998,7 @@ function sendAiMessage() {
       aiChatHistory.push({ role: 'assistant', content: fullText });
       input.disabled = false;
       sendBtn.disabled = false;
-      sendBtn.textContent = t('yes');
+      sendBtn.textContent = t('ai_send');
       input.focus();
     }
   });
