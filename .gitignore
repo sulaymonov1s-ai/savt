@@ -1,0 +1,8 @@
+*.log
+*.bak
+worker/node_modules/
+.wrangler/
+eavt_63_final.json
+eavt_uz.json
+paths.json
+fetch_images.js

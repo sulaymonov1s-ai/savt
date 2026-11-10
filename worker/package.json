@@ -1,0 +1,16 @@
+{
+  "name": "savt-ai",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "secret:key": "wrangler secret put AI_API_KEY",
+    "secret:openrouter": "wrangler secret put AI_API_KEY && wrangler secret put AI_BASE_URL && wrangler secret put AI_MODEL"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241106.0",
+    "wrangler": "^3.85.0"
+  }
+}
