@@ -49,8 +49,14 @@ const ICONS = {
   check: '<path d="M20 6 9 17l-5-5"/>',
   cross: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
   login: '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/>',
-  lock: '<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>'
+  lock: '<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  traffic: '<rect width="10" height="20" x="7" y="2" rx="5"/><path d="M12 6.5h.01"/><path d="M12 12h.01"/><path d="M12 17.5h.01"/>',
+  shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1 1 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+  flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>'
 };
+/* убирает ведущие эмодзи/символы из i18n-строк для рендера с SVG-иконкой */
+function stripEmo(s){ return String(s).replace(/^[^\p{L}\p{N}]+/u, ''); }
 function icon(name, cls){
   return '<svg class="ico ' + (cls || '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || '') + '</svg>';
 }
@@ -1445,7 +1451,7 @@ function renderMarathon(){
     '<div class="setup">' +
       '<div class="glass panel">' +
         '<div class="statbig"><div class="n">' + (isSrs ? dueN : total) + '</div><div class="l">' + esc(isSrs ? t('repeat_label') : t('total_q')) + '</div></div>' +
-        '<h2 class="sec">' + esc(isSrs ? t('srs_title') : t('marathon_title')) + '</h2>' +
+        '<h2 class="sec">' + icon(isSrs ? 'brain' : 'flag') + esc(stripEmo(isSrs ? t('srs_title') : t('marathon_title'))) + '</h2>' +
         '<div class="muted" style="font-size:14px">' +
           esc(isSrs ? t('srs_desc') : t('marathon_desc') + ' ' + t('marathon_focus_note')) +
         '</div>' +
@@ -1544,7 +1550,7 @@ function startSession(opts){
 /* ---------- EXAM ---------- */
 function renderExam(){
   const total = state.questions.length;
-  const title = state.wrong ? t('wrong_title') : state.marathon ? t('marathon_title') : t('tpl_name')(data()[state.tplId].name);
+  const title = state.wrong ? stripEmo(t('wrong_title')) : state.marathon ? stripEmo(t('marathon_title')) : t('tpl_name')(data()[state.tplId].name);
 
   /* Шапка теста: один компактный ряд без переносов.
      Порядок: Назад · название · [гибкий зазор] · счётчик · таймер · пауза · Завершить */
@@ -1846,12 +1852,12 @@ function renderStats(){
 
   const doneCnt = Object.values(prog).filter(p=> p.correct/p.total >= .7).length;
   const badges = [
-    { ic:'🚦', lbl:t('badge_first'), on: hist.length >= 1 },
-    { ic:'🛡', lbl:t('badge_10'), on: doneCnt >= 10 },
-    { ic:'🛠', lbl:t('badge_clean'), on: total > 0 && wc === 0 },
-    { ic:'🔥', lbl:t('badge_3days'), on: streak >= 3 },
-    { ic:'🏆', lbl:t('badge_all'), on: doneCnt >= 63 },
-  ].map(b=> '<div class="badge ' + (b.on?'':'off') + '"><span class="bi">' + b.ic + '</span><span class="bl">' + b.lbl + '</span></div>').join('');
+    { ico:'traffic', lbl:t('badge_first'), on: hist.length >= 1 },
+    { ico:'shield', lbl:t('badge_10'), on: doneCnt >= 10 },
+    { ico:'wrench', lbl:t('badge_clean'), on: total > 0 && wc === 0 },
+    { ico:'flame', lbl:t('badge_3days'), on: streak >= 3 },
+    { ico:'trophy', lbl:t('badge_all'), on: doneCnt >= 63 },
+  ].map(b=> '<div class="badge ' + (b.on?'':'off') + '"><span class="bi">' + icon(b.ico) + '</span><span class="bl">' + b.lbl + '</span></div>').join('');
 
   const rows = sortedIds().map(id=>{
     const p = prog[id];
@@ -1865,7 +1871,7 @@ function renderStats(){
   view.innerHTML =
     '<div class="row" style="margin-bottom:14px"><button class="btn ghost" id="back">' + esc(t('back')) + '</button></div>' +
     '<div class="glass panel" style="text-align:center">' +
-      '<h2 class="sec" style="margin-top:0">' + esc(t('stats_title')) + '</h2>' +
+      '<h2 class="sec" style="margin-top:0">' + icon('chart') + esc(stripEmo(t('stats_title'))) + '</h2>' +
       '<div class="ring" style="--pct:' + pct + '%"><div class="hole">' +
         '<div><div class="big">' + pct + '%</div><div class="muted">' + esc(t('right_ans')) + '</div></div>' +
       '</div></div>' +
