@@ -1149,6 +1149,25 @@ body.day .sidemenu .mitem:hover .ico{ filter:drop-shadow(0 0 5px rgba(10,132,255
   .authcard{padding:16px 14px;border-radius:18px}
 }
 
+
+/* PERF-мобильный: фиксированные панели без дорогих блюров,
+   вечные анимации выключены, roadmap рендерится лениво */
+@media (max-width:640px){
+  .glass{ backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+  .bottombar{ backdrop-filter:none!important; -webkit-backdrop-filter:none!important;
+    background:rgba(18,21,28,.93); }
+  body.day .bottombar{ background:rgba(255,255,255,.95); }
+  .sidemenu{ backdrop-filter:none!important; background:rgba(16,19,26,.97); }
+  body.day .sidemenu{ background:rgba(255,255,255,.98); }
+  .toast{ backdrop-filter:none!important; background:rgba(24,28,36,.96); }
+  .ai-fab::after{ display:none; }
+  .modebtn .ico{ animation:none; }
+}
+/* content-visibility: 63 карточки рендерятся только когда видны */
+.node{ content-visibility:auto; contain-intrinsic-size: auto 104px; }
+@media (prefers-reduced-motion: reduce){
+  .node{ content-visibility:visible; }
+}
 </style>
 </head>
 <body>
@@ -1194,7 +1213,7 @@ body.day .sidemenu .mitem:hover .ico{ filter:drop-shadow(0 0 5px rgba(10,132,255
 </div>
 <div class="bottombar" id="bottombar"><div class="dots" id="dotsMobile"></div></div>
 
-<script src="data.js"></script>
-<script src="app.js?v=202611110037"></script>
+<script defer src="data.js?v=202611110046"</script>
+<script defer src="app.js?v=202611110046"></script>
 </body>
 </html>

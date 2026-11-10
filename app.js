@@ -1056,6 +1056,8 @@ function go(name, params){
   }
   const app = $('#app');
   app.classList.add('pt-out');
+  /* быстрее смена экрана: 60мс на телефоне, 100мс на ПК */
+  const PT_DELAY = (typeof IS_MOBILE !== 'undefined' && IS_MOBILE) ? 60 : 100;
   setTimeout(()=>{
     state = Object.assign({ timerId:null }, params||{});
     routes[name]();
@@ -1063,7 +1065,7 @@ function go(name, params){
     app.classList.remove('pt-out');
     app.classList.add('pt-in');
     setTimeout(()=> app.classList.remove('pt-in'), 30);
-  }, 160);
+  }, PT_DELAY);
 }
 
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -1075,7 +1077,7 @@ function bodyHTML(parts, only){
   }).map(p=>{
     if(p.img){
       const remote = 'https://back.eavtotalim.uz' + p.img.replace(/^images\/img/, '');
-      return '<div class="qimg"><img src="' + esc(p.img) + '" data-zoom="1" onerror="this.onerror=null;this.src=\'' + esc(remote) + '\'" alt="" loading="lazy"></div>';
+      return '<div class="qimg"><img src="' + esc(p.img) + '" data-zoom="1" onerror="this.onerror=null;this.src=\'' + esc(remote) + '\'" alt="" loading="lazy" decoding="async"></div>';
     }
     return '<div>' + esc(p.text||'') + '</div>';
   }).join('');
