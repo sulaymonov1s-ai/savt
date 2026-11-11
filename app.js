@@ -141,7 +141,7 @@ const I18N = {
     stage_current: 'Следующий этап',
     stage_perfect: 'Пройден на 100%',
     modes: 'Режимы',
-    ai_btn: '🤖 ИИ-помощник', ai_title: 'Чат с ИИ', ai_placeholder: 'Спросите про этот вопрос...', ai_thinking: 'ИИ думает...', ai_error: 'Ошибка ИИ, попробуйте позже', ai_context_q: 'Вопрос:', ai_context_a: 'Ваш ответ:', ai_context_correct: 'Правильный ответ:', ai_prompt_hint: 'Можете спросить: почему это правильный ответ, разбор ошибки, похожие ситуации, просто объяснить проще.', ai_fab_title: 'ИИ-помощник по ПДД', ai_general_title: 'ИИ-помощник по ПДД', ai_general_placeholder: 'Спросите что угодно про ПДД...', ai_send: '➤', ai_timeout: 'ИИ не ответил (таймаут). Попробуйте ещё раз.',
+    ai_btn: '🤖 ИИ-помощник', ai_title: 'Чат с ИИ', ai_placeholder: 'Спросите про этот вопрос...', ai_thinking: 'ИИ думает...', ai_error: 'Ошибка ИИ, попробуйте позже', ai_context_q: 'Вопрос:', ai_context_a: 'Ваш ответ:', ai_context_correct: 'Правильный ответ:', ai_prompt_hint: 'Можете спросить: почему это правильный ответ, разбор ошибки, похожие ситуации, просто объяснить проще.', ai_fab_title: 'ИИ-помощник по ПДД', ai_general_title: 'ИИ-помощник по ПДД', ai_general_placeholder: 'Спросите что угодно про ПДД...', ai_send: '➤', ai_timeout: 'ИИ не ответил (таймаут). Попробуйте ещё раз.', aa_title: 'ИИ-анализ слабых мест', aa_morning: 'утренний', aa_evening: 'вечерний', aa_loading: 'ИИ изучает ваш прогресс…', aa_weak: 'Слабые места', aa_plan: 'План на сегодня', aa_train: '▶ Тренировать слабые места', aa_error: 'Не удалось получить анализ', aa_fresh: 'Обновить анализ', aa_login_cta: 'Войдите в аккаунт, чтобы 2 раза в день получать персональный ИИ-анализ слабых мест.',
     auth_title: 'Аккаунт', login: 'Войти', register: 'Регистрация', email: 'Email', password: 'Пароль', logout: 'Выйти', sync: 'Синхронизировать', sync_ok: '✓ Прогресс синхронизирован', sync_fail: '✗ Ошибка синхронизации', auth_err_email: 'Некорректный email', auth_err_pass: 'Пароль от 6 символов', auth_err: 'Ошибка: проверьте данные', auth_exists: 'Такой email уже зарегистрирован', auth_bad: 'Неверный email или пароль', auth_login_tab: 'Вход', auth_reg_tab: 'Регистрация', auth_signed: '✓ Вход выполнен', auth_bye: 'Вы вышли из аккаунта', auth_net: 'Нет соединения с сервером. Проверьте интернет и попробуйте ещё раз.', auth_confirm_title: 'Подтвердите вход', auth_confirm_hint: 'Для защиты прогресса подтвердите вход — введите пароль. Это раз в неделю.', auth_skip: 'Продолжить без аккаунта', splash_tagline: 'Тренажёр экзамена ПДД', mistakes_focus: n => 'Фокус на повторных ошибках: ' + n, repeated_mistakes: n => 'Повторные ошибки: ' + n, marathon_focus_note: 'Вопросы, в которых вы ошибались, показываются чаще и в начале.'
   },
   uz: {
@@ -223,7 +223,7 @@ const I18N = {
     stage_current: 'Keyingi bosqich',
     stage_perfect: '100% bajarilgan',
     modes: 'Rejimlar',
-    ai_btn: "🤖 AI yordamchi", ai_title: "AI bilan chat", ai_placeholder: "Bu savol haqida so'rang...", ai_thinking: "AI o'ylayapti...", ai_error: "AI xatosi, keyinroq urinib ko'ring", ai_context_q: "Savol:", ai_context_a: "Sizning javobingiz:", ai_context_correct: "To'g'ri javob:", ai_prompt_hint: "So'rishingiz mumkin: nima uchun bu to'g'ri javob, xato tahlili, o'xshash holatlar, soddalashtirib tushuntirish.", ai_fab_title: "PPD bo'yicha AI yordamchi", ai_general_title: "PPD bo'yicha AI yordamchi", ai_general_placeholder: "PPD haqida istalgan narsani so'rang...", ai_send: "➤", ai_timeout: "AI javob bermadi (timeout). Yana urinib ko'ring.",
+    ai_btn: "🤖 AI yordamchi", ai_title: "AI bilan chat", ai_placeholder: "Bu savol haqida so'rang...", ai_thinking: "AI o'ylayapti...", ai_error: "AI xatosi, keyinroq urinib ko'ring", ai_context_q: "Savol:", ai_context_a: "Sizning javobingiz:", ai_context_correct: "To'g'ri javob:", ai_prompt_hint: "So'rishingiz mumkin: nima uchun bu to'g'ri javob, xato tahlili, o'xshash holatlar, soddalashtirib tushuntirish.", ai_fab_title: "PPD bo'yicha AI yordamchi", ai_general_title: "PPD bo'yicha AI yordamchi", ai_general_placeholder: "PPD haqida istalgan narsani so'rang...", ai_send: "➤", ai_timeout: "AI javob bermadi (timeout). Yana urinib ko'ring.", aa_title: "AI zaif joylar tahlili", aa_morning: "ertalabki", aa_evening: "kechki", aa_loading: "AI progressingizni o'rganmoqda…", aa_weak: "Zaif joylar", aa_plan: "Bugungi reja", aa_train: "▶ Zaif joylarni mashq qilish", aa_error: "Tahlil olib bo'lmadi", aa_fresh: "Tahlilni yangilash", aa_login_cta: "Zaif joylaringizni kuniga 2 marta AI tahlil qilishi uchun akkauntga kiring.",
     auth_title: "Akkaunt", login: "Kirish", register: "Ro'yxatdan o'tish", email: "Email", password: "Parol", logout: "Chiqish", sync: "Sinxronlash", sync_ok: "✓ Progress sinxronlandi", sync_fail: "✗ Sinxronlashda xato", auth_err_email: "Email noto'g'ri", auth_err_pass: "Parol 6 belgidan kamida", auth_err: "Xato: ma'lumotlarni tekshiring", auth_exists: "Bu email allaqachon ro'yxatdan o'tgan", auth_bad: "Email yoki parol noto'g'ri", auth_login_tab: "Kirish", auth_reg_tab: "Ro'yxatdan o'tish", auth_signed: "✓ Kirish bajarildi", auth_bye: "Akkauntdan chiqdingiz", auth_net: "Server bilan aloqa yo'q. Internetni tekshirib, yana urinib ko'ring.", auth_confirm_title: "Kirishni tasdiqlash", auth_confirm_hint: "Progress himoyasi uchun kirishni tasdiqlang — parolni kiriting. Bu haftada bir marta.", auth_skip: "Akkauntsiz davom etish", splash_tagline: "PPD imtihoni treningi", mistakes_focus: n => "Takroriy xatolarga fokus: " + n, repeated_mistakes: n => "Takroriy xatolar: " + n, marathon_focus_note: "Xato qilgan savollaringiz ko'proq va boshida ko'rsatiladi."
   },
 };
@@ -436,6 +436,119 @@ async function syncPush(showFeedback){
     if(resp.status === 401){ clearAuth(); updateChrome(); if(showFeedback) toast(t('sync_fail')); return; }
     if(showFeedback) toast(resp.ok ? t('sync_ok') : t('sync_fail'));
   }catch(e){ if(showFeedback) toast(t('sync_fail')); }
+}
+
+/* ---------- ИИ-АНАЛИЗ СЛАБЫХ МЕСТ (2 раза в день) ---------- */
+function buildAnalysisSummary(){
+  const prog = loadProgress();
+  const wrong = loadWrong();
+  const mistakes = loadMistakes();
+  const D = data();
+  const ids = sortedIds();
+  let correct = 0, total = 0;
+  Object.values(prog).forEach(p=>{ correct += p.correct||0; total += p.total||0; });
+  let hist = [];
+  try{ hist = JSON.parse(localStorage.getItem('eavt_history')||'[]'); }catch(e){}
+  const templates = ids.map(id=>{
+    const p = prog[id];
+    const tt = D[id];
+    return { n: t('tpl_name')(tt.name), p: p ? Math.round(p.correct/p.total*100) : null, q: tt.questions.length };
+  });
+  const byTpl = {};
+  Object.keys(mistakes).forEach(k=>{
+    const tid = k.split(':')[0];
+    const e = mistakes[k];
+    byTpl[tid] = byTpl[tid] || { m: 0, rep: 0 };
+    byTpl[tid].m += e.c || 1;
+    if((e.c||0) >= 2) byTpl[tid].rep += 1;
+  });
+  Object.keys(wrong).forEach(tid=>{
+    byTpl[tid] = byTpl[tid] || { m: 0, rep: 0 };
+    byTpl[tid].m += Object.keys(wrong[tid]).length;
+  });
+  const topMistakes = Object.entries(byTpl)
+    .sort((a,b)=> b[1].m - a[1].m).slice(0, 10)
+    .map(e=> ({ n: D[e[0]] ? t('tpl_name')(D[e[0]].name) : ('№' + e[0]), m: e[1].m, rep: e[1].rep }));
+  const repeatedQuestions = Object.entries(mistakes)
+    .filter(e=> (e[1].c||0) >= 2)
+    .sort((a,b)=> (b[1].c||0) - (a[1].c||0)).slice(0, 5)
+    .map(e=>{
+      const parts = e[0].split(':');
+      const tt = D[parts[0]];
+      const q = tt ? tt.questions[+parts[1]] : null;
+      return { t: tt ? t('tpl_name')(tt.name) : ('№' + parts[0]), c: e[1].c, q: q ? plainBody(q.body).slice(0, 60) : '' };
+    });
+  return {
+    answeredTotal: total, correctTotal: correct, pct: total ? Math.round(correct/total*100) : 0,
+    wrongCount: wrongCount(), dueCount: srsDueCount(),
+    repeatedCount: Object.values(mistakes).filter(m=> (m.c||0) >= 2).length,
+    templates: templates, topMistakes: topMistakes, repeatedQuestions: repeatedQuestions,
+    recent: hist.slice(-7).map(h=> ({ p: Math.round(h.c/h.t*100), ts: h.ts }))
+  };
+}
+
+async function fetchAnalysis(force){
+  if(!authInfo()) return { guest: true };
+  try{
+    const resp = await fetch(AI_ENDPOINT + '/analysis/get', {
+      method: 'POST',
+      headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
+      body: JSON.stringify({ summary: buildAnalysisSummary(), lang: LANG, force: !!force })
+    });
+    if(resp.status === 401){ clearAuth(); updateChrome(); return { expired: true }; }
+    if(!resp.ok) return { error: true };
+    return { data: await resp.json() };
+  }catch(e){ return { error: true }; }
+}
+
+let aaBusy = false;
+async function renderAnalysisCard(force){
+  const box = $('#aiAnalysis');
+  if(!box || aaBusy) return;
+  if(!authInfo()){
+    box.innerHTML = '<div class="glass panel aacard">' +
+      '<div class="aacard-head">' + icon('robot') + esc(t('aa_title')) + '</div>' +
+      '<div class="aacard-hint">' + esc(t('aa_login_cta')) + '</div></div>';
+    return;
+  }
+  aaBusy = true;
+  box.innerHTML = '<div class="glass panel aacard">' +
+    '<div class="aacard-head">' + icon('robot') + esc(t('aa_title')) +
+      '<span class="aa-spacer"></span>' +
+      '<button class="aacard-refresh" id="aaRefresh" title="' + esc(t('aa_fresh')) + '" aria-label="' + esc(t('aa_fresh')) + '">' + icon('sync') + '</button></div>' +
+    '<div class="aacard-body" id="aaBody"><span class="aa-loading">' + esc(t('aa_loading')) + '</span></div></div>';
+  $('#aaRefresh').addEventListener('click', ()=> rerenderAnalysis(true));
+  const res = await fetchAnalysis(force);
+  aaBusy = false;
+  const body = $('#aaBody');
+  if(!body) return;
+  if(res.guest){ body.innerHTML = esc(t('aa_login_cta')); return; }
+  if(res.expired || res.error){
+    body.innerHTML = esc(t('aa_error')) + ' <button class="btn ghost" id="aaRetry" style="padding:4px 10px;font-size:12px;margin-left:6px">' + esc(t('retry')) + '</button>';
+    const rb = $('#aaRetry');
+    if(rb) rb.addEventListener('click', ()=> rerenderAnalysis(true));
+    return;
+  }
+  const d = res.data;
+  let html = '';
+  if(d.headline) html += '<div class="aa-headline">' + esc(d.headline) + '</div>';
+  if(d.weak && d.weak.length){
+    html += '<div class="aa-sec"><b>' + icon('cross') + esc(t('aa_weak')) + '</b><ul>' + d.weak.map(x=> '<li>' + esc(x) + '</li>').join('') + '</ul></div>';
+  }
+  if(d.plan && d.plan.length){
+    html += '<div class="aa-sec"><b>' + icon('check') + esc(t('aa_plan')) + '</b><ul>' + d.plan.map(x=> '<li>' + esc(x) + '</li>').join('') + '</ul></div>';
+  }
+  html += '<button class="btn primary" id="aaTrain">' + esc(t('aa_train')) + '</button>';
+  html += '<div class="aa-when">' + esc((d.window === 'am' ? t('aa_morning') : t('aa_evening')) + ' · ' + agoText(d.generatedAt || Date.now())) + '</div>';
+  body.innerHTML = html;
+  const tb = $('#aaTrain');
+  if(tb) tb.addEventListener('click', ()=> startSession({ marathon: true, srs: false, count: 20, shufQ: true, shufA: true }));
+}
+function rerenderAnalysis(force){
+  const box = $('#aiAnalysis');
+  if(box) box.innerHTML = '';
+  aaBusy = false;
+  renderAnalysisCard(force);
 }
 
 /* ---------- AUTH MODAL ---------- */
@@ -1264,6 +1377,7 @@ function renderHome(){
         '<div class="sub">' + esc(t('roadmap_sub')(ids.length)) + '</div></div>' +
         dock +
       '</div></div>' +
+    '<div id="aiAnalysis"></div>' +
     '<div class="roadmap" id="roadmap">' +
       '<svg class="track" preserveAspectRatio="none">' +
         '<defs>' +
@@ -1299,6 +1413,7 @@ function renderHome(){
     }
   });
 
+  renderAnalysisCard();
   bindDockGlide();
   drawTrack();
 }

@@ -1169,6 +1169,30 @@ body.day .sidemenu .mitem:hover .ico{ filter:drop-shadow(0 0 5px rgba(10,132,255
 @media (prefers-reduced-motion: reduce){
   .node{ content-visibility:visible; }
 }
+
+/* ---------- Карточка ИИ-анализа на главной ---------- */
+.aacard{padding:16px 18px;margin-bottom:20px}
+.aacard-head{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14px}
+.aacard-head .ico{width:1.2em;height:1.2em;flex:0 0 auto}
+.aa-spacer{flex:1}
+.aacard-refresh{background:none;border:none;color:var(--muted);cursor:pointer;padding:5px;border-radius:9px;display:flex;align-items:center}
+.aacard-refresh:hover{color:var(--text);background:var(--glass2)}
+.aacard-refresh .ico{width:1.1em;height:1.1em}
+.aacard-body{margin-top:10px;font-size:14px;line-height:1.55}
+.aacard-hint{color:var(--muted);font-size:13px;margin-top:6px}
+.aa-loading{color:var(--muted);animation:aaPulse 1.4s ease-in-out infinite;display:inline-block}
+@keyframes aaPulse{50%{opacity:.45}}
+.aa-headline{margin-bottom:10px}
+.aa-sec{margin:8px 0}
+.aa-sec b{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);margin-bottom:4px}
+.aa-sec b .ico{width:1.1em;height:1.1em}
+.aa-sec ul{margin:0;padding-left:18px}
+.aa-sec li{margin:3px 0}
+.aa-when{color:var(--muted2);font-size:11px;margin-top:8px}
+#aaTrain{margin-top:12px}
+@media (prefers-reduced-motion: reduce){
+  .aa-loading{animation:none}
+}
 </style>
 </head>
 <body>
@@ -1214,7 +1238,7 @@ body.day .sidemenu .mitem:hover .ico{ filter:drop-shadow(0 0 5px rgba(10,132,255
 </div>
 <div class="bottombar" id="bottombar"><div class="dots" id="dotsMobile"></div></div>
 
-<script defer src="data.js?v=202611110136"></script>
-<script defer src="app.js?v=202611110136"></script>
+<script defer src="data.js?v=202611111419"></script>
+<script defer src="app.js?v=202611111419"></script>
 </body>
 </html>

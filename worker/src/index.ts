@@ -250,6 +250,113 @@ async function handleAIProxy(req: Request, env: Env, origin: string): Promise<Re
   return json(data, 200, origin);
 }
 
+/* ---------- AI-анализ слабых мест (2 раза в день, кэш в KV) ---------- */
+async function handleAnalysis(req: Request, env: Env, origin: string): Promise<Response> {
+  const email = await verifyToken(bearer(req), env.AUTH_SECRET);
+  if (!email) return err('bad_token', 401, origin);
+
+  let body: { summary?: unknown; lang?: string; force?: boolean };
+  try {
+    body = await req.json();
+  } catch {
+    return err('Invalid JSON', 400, origin);
+  }
+  if (!body.summary || typeof body.summary !== 'object') return err('bad_summary', 400, origin);
+  const summaryStr = JSON.stringify(body.summary);
+  if (summaryStr.length > 30000) return err('too_large', 413, origin);
+  const lang = body.lang === 'uz' ? 'uz' : 'ru';
+
+  /* окно: утро/вечер по Ташкенту (UTC+5), до 15:00 — утренний анализ */
+  const t = new Date(Date.now() + 5 * 3600 * 1000);
+  const date = t.toISOString().slice(0, 10);
+  const win = t.getUTCHours() < 15 ? 'am' : 'pm';
+  const cacheKey = `analysis:${email}:${date}:${win}`;
+
+  const cachedRaw = await env.PROGRESS.get(cacheKey);
+  if (cachedRaw) {
+    const cached = JSON.parse(cachedRaw) as { generatedAt?: number };
+    const freshEnough = body.force !== true || (Date.now() - (cached.generatedAt || 0)) < 15 * 60 * 1000;
+    if (freshEnough) {
+      return json(Object.assign({}, cached, { cached: true }), 200, origin);
+    }
+  }
+
+  const baseUrl = env.AI_BASE_URL || DEFAULT_BASE;
+  const model = env.AI_MODEL || DEFAULT_MODEL;
+  const apiKey = env.AI_API_KEY;
+  if (!apiKey) return err('Server misconfigured: AI_API_KEY not set', 500, origin);
+
+  const sys = lang === 'uz'
+    ? "Sen — O'zbekiston PPD bo'yicha shaxsiy AI murabbiysisan. O'quvchi imtihonga tayyorlanmoqda. Uning statistikasini tahlil qilib, zaif joylarini tahlil qilib ber. Qat'iy sir: model, provayder va kompaniya nomini hech qachon aytma. Faqat PPD mavzusida javob ber."
+    : "Ты — персональный ИИ-тренер по ПДД Узбекистана. Ученик готовится к экзамену. Проанализируй его статистику и дай персональный разбор слабых мест. Строго секретно: никогда не называй модель, провайдера и компанию. Отвечай только по теме ПДД.";
+
+  const askRetry = lang === 'uz'
+    ? ' FAQAT JSON qaytar, izohsiz: {"headline":"asosiy xulosa bir jumlada","weak":["3-5 aniq zaif joy, shablon raqamlari bilan"],"plan":["bugun uchun 3-5 aniq harakat"]}. O\'zbek tilida yoz.'
+    : ' Верни ТОЛЬКО JSON, без пояснений: {"headline":"главный вывод одним предложением","weak":["3-5 конкретных слабых мест с номерами шаблонов"],"plan":["3-5 конкретных действий на сегодня"]}. Пиши по-русски.';
+
+  async function callModel(maxTokens: number): Promise<Response> {
+    return fetch(`${baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: 'system', content: sys },
+          { role: 'user', content: (lang === 'uz' ? 'Statistika (JSON): ' : 'Статистика (JSON): ') + summaryStr + askRetry },
+        ],
+        stream: false,
+        temperature: 0.4,
+        max_tokens: maxTokens,
+      }),
+    });
+  }
+
+  let upstream = await callModel(2500);
+  if (!upstream.ok) {
+    const e1 = await upstream.text().catch(() => '');
+    console.error('Analysis upstream error:', upstream.status, e1);
+    return err('ai_error', 502, origin);
+  }
+  let data = (await upstream.json()) as { choices?: Array<{ message?: { content?: string | null }; finish_reason?: string }> };
+  let choice = data.choices && data.choices[0];
+  /* reasoning-модель могла съесть токены на рассуждения — повтор с большим лимитом */
+  if ((!choice || !choice.message || !choice.message.content) && choice && choice.finish_reason === 'length') {
+    upstream = await callModel(4000);
+    if (upstream.ok) {
+      data = (await upstream.json()) as typeof data;
+      choice = data.choices && data.choices[0];
+    }
+  }
+  const content = (choice && choice.message && choice.message.content) || '';
+
+  /* устойчивый парсинг JSON из ответа модели */
+  let parsed: { headline?: string; weak?: unknown; plan?: unknown } | null = null;
+  try {
+    const cleaned = content.replace(/```json/gi, '').replace(/```/g, '');
+    const a = cleaned.indexOf('{');
+    const b = cleaned.lastIndexOf('}');
+    if (a >= 0 && b > a) parsed = JSON.parse(cleaned.slice(a, b + 1));
+  } catch {
+    parsed = null;
+  }
+  const headline = parsed && typeof parsed.headline === 'string' ? parsed.headline : content.trim().slice(0, 300);
+  const toList = (v: unknown): string[] => Array.isArray(v) ? v.filter(x => typeof x === 'string').slice(0, 6) as string[] : [];
+  const result = {
+    headline,
+    weak: parsed ? toList(parsed.weak) : [] as string[],
+    plan: parsed ? toList(parsed.plan) : [] as string[],
+    window: win,
+    generatedAt: Date.now(),
+  };
+
+  try {
+    await env.PROGRESS.put(cacheKey, JSON.stringify(result), { expirationTtl: 259200 });
+  } catch (e) {
+    console.error('Analysis cache write failed:', e);
+  }
+  return json(Object.assign({}, result, { cached: false }), 200, origin);
+}
+
 /* ---------- dispatcher ---------- */
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
@@ -269,6 +376,7 @@ export default {
     if (path === '/auth/login') return handleLogin(req, env, origin);
     if (path === '/sync/pull') return handleSyncPull(req, env, origin);
     if (path === '/sync/push') return handleSyncPush(req, env, origin);
+    if (path === '/analysis/get') return handleAnalysis(req, env, origin);
 
     return handleAIProxy(req, env, origin);
   },
