@@ -18,6 +18,10 @@ const LS_THEME = 'eavt_theme';
 const LS_SRS = 'eavt_srs_v1';
 const LS_LANG = 'eavt_lang';
 const LS_MSAVE = 'eavt_marathon_save_v1';
+const LS_TIME = 'eavt_time_v1';
+/* ---- УЧЁТ ВРЕМЕНИ: сколько минут идёт билет и где пользователь дольше всего думает ---- */
+function loadTime(){ try{ return JSON.parse(localStorage.getItem(LS_TIME)||'{}'); }catch(e){ return {}; } }
+function saveTime(t){ try{ localStorage.setItem(LS_TIME, JSON.stringify(t)); }catch(e){} }
 const MSAVE_V = 1;
 const EXAM_MINUTES = 25;
 const IS_MOBILE = matchMedia('(max-width:640px)').matches;
@@ -98,6 +102,7 @@ const I18N = {
     badges_ttl: 'Достижения', by_tpl: 'По шаблонам',
     badge_first: 'Первый тест', badge_10: '10 зачётов', badge_clean: 'Чистые ошибки',
     badge_3days: 'Серия 3 дня', badge_all: 'Все 64 шаблона',
+    time_res: (m, s) => '⏱ Время: ' + m + ' мин · в среднем ' + s + ' с размышлений на вопрос',
     no_data: 'Файл <b>data.js</b> не найден или пуст.<br>Положите его рядом с index.html',
     streak_days: n => n + ' ' + (n === 1 ? 'день' : n < 5 ? 'дня' : 'дней') + ' подряд',
     sub: (n, q) => n + ' шаблона · ' + q + ' вопросов',
@@ -180,6 +185,7 @@ const I18N = {
     badges_ttl: 'Yutuqlar', by_tpl: 'Shablonlar bo‘yicha',
     badge_first: 'Birinchi test', badge_10: "10 o'tish", badge_clean: 'Xatolarsiz',
     badge_3days: '3 kun seriya', badge_all: 'Barcha 64 shablon',
+    time_res: (m, s) => '⏱ Vaqt: ' + m + ' daqiqa · o\u2018rtacha ' + s + ' s bitta savolga',
     no_data: "Fayl <b>data.js</b> topilmadi yoki bo'sh.<br>Uni index.html yoniga qo'ying",
     streak_days: n => n + ' kun ketma-ket',
     sub: (n, q) => n + ' shablon · ' + q + ' savol',
@@ -449,10 +455,14 @@ function buildAnalysisSummary(){
   Object.values(prog).forEach(p=>{ correct += p.correct||0; total += p.total||0; });
   let hist = [];
   try{ hist = JSON.parse(localStorage.getItem('eavt_history')||'[]'); }catch(e){}
+  const timeData = loadTime();
   const templates = ids.map(id=>{
     const p = prog[id];
     const tt = D[id];
-    return { n: t('tpl_name')(tt.name), p: p ? Math.round(p.correct/p.total*100) : null, q: tt.questions.length };
+    const tm = timeData[id];
+    return { n: t('tpl_name')(tt.name), p: p ? Math.round(p.correct/p.total*100) : null, q: tt.questions.length,
+             min: tm && tm.wall ? Math.round(tm.wall/60000) : null,
+             think: tm && tm.cnt ? Math.round(tm.think/tm.cnt/1000) : null };
   });
   const byTpl = {};
   Object.keys(mistakes).forEach(k=>{
@@ -810,12 +820,30 @@ function buildAiMessages(context, userQuestion) {
   const SECRET_RULE_UZ = " Qat'iy sir: hech qachon aniq modelni, provayderni, ishlab chiqaruvchi kompaniyani yoki texnik tafsilotlarni ayitma — bunday savollarga bu maxfiy ma'lumot deb javob ber. Faqat PPD (yo'l harakati qoidalari), yo'l belgilari va imtihonga tayyorgarliq bilan bog'liq mavzularda javob ber; boshqa mavzularda muloyim rad etib, suhbatni PPDga qaytar.";
   const baseHits = searchQuestionBase(userQuestion, 6);
   const baseBlock = formatBaseHitsForPrompt(baseHits, lang);
+  /* статистика времени — ИИ знает, где пользователь думает дольше всего */
+  let timeBlock = '';
+  if(general){
+    const TD = loadTime();
+    const lines = Object.entries(TD).filter(([,v])=>v && v.cnt)
+      .map(([id,v])=>({ id: id, nm: (data()[id] ? t('tpl_name')(data()[id].name) : ('№'+id)),
+        avg: Math.round((v.think||0)/v.cnt/1000), min: v.wall ? Math.round(v.wall/60000) : 0, cnt: v.cnt }))
+      .sort((a,b)=> b.avg - a.avg);
+    if(lines.length){
+      const top = lines.slice(0, 5).map(l=> l.nm + ' — ' + l.avg + ' с/вопрос (' + l.cnt + ' отв.' + (l.min ? ', ' + l.min + ' мин' : '') + ')').join('; ');
+      const overall = lines.reduce((s,l)=>({think:s.think+l.avg*l.cnt, cnt:s.cnt+l.cnt}), {think:0,cnt:0});
+      const totalAvg = overall.cnt ? Math.round(overall.think/overall.cnt) : 0;
+      const hardest = lines[0];
+      timeBlock = lang === 'uz'
+        ? ' FOYDALANUVCHI STATISTIKASI: o\u2018rtacha ' + totalAvg + ' s bitta savolga o\u2018ylaydi; eng ko\u2018p o\u2018ylaydigan biletlari: ' + top + '. Shuni hisobga olib, shu biletlar mavzularini ko\u2018proq tushuntir.'
+        : ' СТАТИСТИКА ПОЛЬЗОВАТЕЛЯ: в среднем думает ' + totalAvg + ' с на вопрос; дольше всего размышляет над: ' + top + '. Учитывай это: на эти билеты/темы делай акцент в объяснениях.';
+    }
+  }
   const BASE_KNOWLEDGE_RU = " Ты знаешь всю базу тренажёра: 66 билетов по 20 вопросов (всего ~1300 вопросов ПДД Узбекистана). На вопросы вида «в каком билете …» отвечай точным номером билета и цитатой вопроса, опираясь на справку из базы ниже.";
   const BASE_KNOWLEDGE_UZ = " Sen treningyor bazasini to\u2018liq bilasan: 66 bilet, har birida 20 savol (~1300 PPD savoli). «Qaysi biletda …» degan savollarga bazadan olingan ma\u2019lumot asosida aniq bilet raqami va savol bilan javob ber.";
   const sysPrompt = general
     ? ((lang === 'uz')
-      ? "Sen — do'stona PPD (yo'l harakati xavfsizligi) o'qituvchisisiz. Foydalanuvchi imtihonga tayyorlanadi. Javoblar qisqa, aniq va tushunarli bo'lsin. Murakkab qoidalarni sodda misollar bilan tushuntiring." + BASE_KNOWLEDGE_UZ + baseBlock + SECRET_RULE_UZ
-      : "Ты — дружелюбный преподаватель ПДД Узбекистана. Пользователь готовится к экзамену. Отвечай кратко, понятно и по делу. Сложные правила объясняй простыми словами и примерами из жизни. Если спрашивают про знак или ситуацию — уточняй, что изображено, если картинка приложена." + BASE_KNOWLEDGE_RU + baseBlock + SECRET_RULE_RU)
+      ? "Sen — do'stona PPD (yo'l harakati xavfsizligi) o'qituvchisisiz. Foydalanuvchi imtihonga tayyorlanadi. Javoblar qisqa, aniq va tushunarli bo'lsin. Murakkab qoidalarni sodda misollar bilan tushuntiring." + BASE_KNOWLEDGE_UZ + baseBlock + timeBlock + SECRET_RULE_UZ
+      : "Ты — дружелюбный преподаватель ПДД Узбекистана. Пользователь готовится к экзамену. Отвечай кратко, понятно и по делу. Сложные правила объясняй простыми словами и примерами из жизни. Если спрашивают про знак или ситуацию — уточняй, что изображено, если картинка приложена." + BASE_KNOWLEDGE_RU + baseBlock + timeBlock + SECRET_RULE_RU)
     : ((lang === 'uz')
       ? "Sen O'zbekistonda PPD (yo'l harakati xavfsizligi) imtihoniga tayyorlanayotgan haydovchi uchun yordamchisisiz. Javobaringiz qisqa, aniq va foydali bo'lishi kerak. Kontekst: savol matni, foydalanuvchi javobi, to'g'ri javob va rasm (agar bo'lsa). Foydalanuvchi savolga javob bering, xatolarni tahlil qiling, yoki oddiroq tushuntiring." + BASE_KNOWLEDGE_UZ + baseBlock + SECRET_RULE_UZ
       : "Ты — помощник для подготовки к экзамену ПДД в Узбекистане. Отвечай кратко, точно и полезно. Контекст: текст вопроса, ответ пользователя, правильный ответ и изображение (если есть). Отвечай на вопрос пользователя, анализируй ошибки или объясни проще. Учитывай детали на картинке: знаки, разметку, участников движения." + BASE_KNOWLEDGE_RU + baseBlock + SECRET_RULE_RU);
@@ -1711,6 +1739,8 @@ function startSession(opts){
     langAtStart: LANG,
     questions: items,
     answers: new Array(items.length).fill(null),
+    qTimes: new Array(items.length).fill(0),
+    startedAt: Date.now(),
     idx: 0,
     deadline: Date.now() + minutes*60*1000,
     finished: false,
@@ -1840,6 +1870,8 @@ function renderDots(){
 
 function renderQuestion(){
   const q = state.questions[state.idx].q;
+  if(!state.qTimes) state.qTimes = new Array(state.questions.length).fill(0);
+  state.qShownAt = Date.now();
   const total = state.questions.length;
   const sel = state.answers[state.idx];
   const answered = sel !== null;
@@ -1892,6 +1924,7 @@ function renderQuestion(){
     $('#qwrap').querySelectorAll('.ans').forEach(el=>{
       el.addEventListener('click', ()=>{
         state.answers[state.idx] = +el.dataset.i;
+        state.qTimes[state.idx] += Date.now() - (state.qShownAt || Date.now());
         renderQuestion();
         if(state.idx < total-1) setTimeout(()=>{ state.idx++; renderQuestion(); }, 220);
       });
@@ -1940,6 +1973,20 @@ function finishExam(timeout){
     }
   }
   if(!state.wrong) touchHistory(correct, total);
+  /* учёт времени: раздумья по каждому билету + длительность сессии билета */
+  state.qTimes = state.qTimes || new Array(state.questions.length).fill(0);
+  const T = loadTime();
+  state.questions.forEach((it, i)=>{
+    const e = T[it.tplId] = T[it.tplId] || { think: 0, wall: 0, cnt: 0, sess: 0 };
+    e.think += state.qTimes[i] || 0;
+    if(state.answers[i] !== null) e.cnt += 1;
+  });
+  if(!state.wrong && !state.marathon && state.tplId && T[state.tplId]){
+    T[state.tplId].wall += Date.now() - (state.startedAt || Date.now());
+    T[state.tplId].sess += 1;
+  }
+  saveTime(T);
+  state.spentMs = state.startedAt ? Date.now() - state.startedAt : 0;
   try{ if(authInfo()) syncPush(false); }catch(e){}
   go('result', Object.assign({}, state, { timeout: timeout }));
 }
@@ -1955,6 +2002,16 @@ function renderResult(){
   const pc = Math.round(correct/total*100);
   const pass = pc >= 70;
   const nxt = (state.wrong || state.marathon) ? null : nextTplId(state.tplId);
+
+  /* строка времени на результате */
+  let timeHTML = '';
+  const spentMin = state.spentMs ? Math.max(1, Math.round(state.spentMs/60000)) : 0;
+  const thinkSum = (state.qTimes||[]).reduce((s,x)=>s+(x||0),0);
+  const answeredN = state.answers.filter(a=>a!==null).length;
+  if(answeredN){
+    const avgSec = Math.round(thinkSum/answeredN/1000);
+    timeHTML = '<div class="muted" style="margin-top:4px">' + esc(t('time_res')(spentMin || '<1', avgSec)) + '</div>';
+  }
 
   const reviewHTML = state.questions.map((it, i)=>{
     const q = it.q;
@@ -1979,6 +2036,7 @@ function renderResult(){
       (state.timeout ? '<div class="chip bad" style="display:inline-block">' + esc(t('timeout')) + '</div>' : '') +
       '<div class="score ' + (pass?'bigok':'bigbad') + '">' + correct + '<small> / ' + total + '</small></div>' +
       '<div class="muted">' + pc + '% · ' + esc(pass ? t('pass') : t('fail')) + '</div>' +
+      timeHTML +
       '<div class="row" style="justify-content:center;margin-top:22px">' +
         '<button class="btn" id="home">' + esc(t('home_btn')) + '</button>' +
         '<button class="btn" id="retry">' + esc(t('retry')) + '</button>' +
