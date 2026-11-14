@@ -45,6 +45,24 @@ function archiveProgress(){
   arr.push({ ts: Date.now(), avg: avg, items: items });
   try{ localStorage.setItem(LS_ARCHIVE, JSON.stringify(arr.slice(-20))); }catch(e){}
 }
+/* ---- ДОЛГИЕ РАЗДУМЬЯ (🐢): копилка сложных вопросов для перерешивания ---- */
+const LS_SLOW = 'eavt_slow_v1';
+function loadSlow(){ try{ return JSON.parse(localStorage.getItem(LS_SLOW)||'{}'); }catch(e){ return {}; } }
+function slowCount(){ const s = loadSlow(); return Object.values(s).reduce((n,o)=>n+Object.keys(o).length, 0); }
+function slowMark(tplId, origIdx, sec){
+  const s = loadSlow();
+  s[tplId] = s[tplId] || {};
+  s[tplId][origIdx] = Math.max(s[tplId][origIdx] || 0, sec);
+  try{ localStorage.setItem(LS_SLOW, JSON.stringify(s)); }catch(e){}
+}
+function slowRight(tplId, origIdx){
+  const s = loadSlow();
+  if(s[tplId] && s[tplId][origIdx] !== undefined){
+    delete s[tplId][origIdx];
+    if(!Object.keys(s[tplId]).length) delete s[tplId];
+    try{ localStorage.setItem(LS_SLOW, JSON.stringify(s)); }catch(e){}
+  }
+}
 const MSAVE_V = 1;
 const EXAM_MINUTES = 25;
 const IS_MOBILE = matchMedia('(max-width:640px)').matches;
@@ -66,6 +84,7 @@ const ICONS = {
   wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
   chart: '<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
   archive: '<rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
   moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
   user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
@@ -116,6 +135,8 @@ const I18N = {
     amount: 'Количество вопросов',
     start_repeat: '▶ Начать повторение', start_marathon: '▶ Начать марафон',
     wrong_title: '🛠 Работа над ошибками',
+    slow_btn: '🐢 Долгие', slow_title: '🐢 Долгие раздумья',
+    slow_desc: 'Вопросы, над которыми ты думал дольше всего (⏱ 30 с и больше или вдвое дольше обычного). Ответишь быстро — вопрос сам покинет этот список.',
     finish: 'Завершить',
     exit_title: 'Выйти из теста?', exit_text: 'Прогресс этой попытки не сохранится.', exit_ok: 'Выйти',
     finish_title: 'Завершить тест?',
@@ -202,6 +223,8 @@ const I18N = {
     amount: 'Savollar soni',
     start_repeat: '▶ Takrorlashni boshlash', start_marathon: '▶ Marafonni boshlash',
     wrong_title: '🛠 Xatolar ustida ishlash',
+    slow_btn: '🐢 Sekin', slow_title: '🐢 Sekin o\u2018yilgan savollar',
+    slow_desc: 'Eng ko\u2018p o\u2018ylangan savollaring (⏱ 30 s va ortiq yoki o\u2018rtachadan ikki baravar ko\u2018p). Tez javob bersang — savol o\u2018z-o\u2018zidan ro\u2018yxatdan chiqadi.',
     finish: 'Yakunlash',
     exit_title: 'Testdan chiqilsinmi?', exit_text: 'Bu urinish natijasi saqlanmaydi.', exit_ok: 'Chiqish',
     finish_title: 'Test yakunlansinmi?',
@@ -1481,6 +1504,9 @@ function renderHome(){
       '<button class="modebtn good" id="wrongBtn" title="' + esc(t('wrong_btn').replace(/^🛠\s*/, '')) + '" ' + (wc ? '' : 'disabled') + '>' +
         '<span class="mi">' + icon('wrench') + '</span><span class="mlbl">' + esc(t('wrong_btn').replace(/^🛠\s*/, '')) + '</span><span class="mshort">' + esc(t('w_short')) + '</span>' +
         (wc ? '<span class="cnt">' + wc + '</span>' : '') + '</button>' +
+      '<button class="modebtn warn" id="slowBtn" title="' + esc(t('slow_title').replace(/^🐢\s*/, '')) + '" ' + (slowCount() ? '' : 'disabled') + '>' +
+        '<span class="mi">' + icon('clock') + '</span><span class="mlbl">' + esc(t('slow_btn').replace(/^🐢\s*/, '')) + '</span><span class="mshort">' + esc(t('slow_btn').replace(/^🐢\s*/, '').slice(0, 6)) + '</span>' +
+        (slowCount() ? '<span class="cnt">' + slowCount() + '</span>' : '') + '</button>' +
       '<button class="modebtn" id="archiveBtn" title="' + esc(t('archive')) + '"><span class="mi">' + icon('archive') + '</span><span class="mlbl">' + esc(t('archive').replace(/^🗄\s*/, '')) + '</span></button>' +
       '<button class="modebtn danger" id="resetAll">' + esc(t('reset')) + '</button>' +
     '</div>';
@@ -1517,6 +1543,7 @@ function renderHome(){
   });
   $('#aiFab').addEventListener('click', ()=> openAiChat(null));
   $('#wrongBtn').addEventListener('click', ()=>{ if(wrongCount()) go('setup', { wrong: true }); });
+  $('#slowBtn').addEventListener('click', ()=>{ if(slowCount()) go('setup', { slow: true }); });
   $('#srsBtn').addEventListener('click', ()=>{
     const sv = loadMarathonState();
     if(srsDueCount() || (sv && sv.srs)) go('marathon', { srs: true });
@@ -1609,8 +1636,10 @@ addEventListener('resize', ()=>{ if($('#roadmap')) drawTrack(); });
 /* ---------- SETUP ---------- */
 function renderSetup(){
   const isWrong = !!state.wrong;
-  const tt = isWrong ? null : data()[state.tplId];
-  const total = isWrong ? wrongCount() : tt.questions.length;
+  const isSlow = !!state.slow;
+  const isPractice = isWrong || isSlow;
+  const tt = isPractice ? null : data()[state.tplId];
+  const total = isWrong ? wrongCount() : (isSlow ? slowCount() : tt.questions.length);
 
   view.innerHTML =
     '<div class="row" style="margin-bottom:14px"><button class="btn ghost" id="back">' + esc(t('back')) + '</button></div>' +
@@ -1619,7 +1648,7 @@ function renderSetup(){
         '<div class="statbig"><div class="n">' + total + '</div><div class="l">' + esc(t('q_count')) + '</div></div>' +
         '<h2 class="sec">' + esc(t('details')) + '</h2>' +
         '<div class="muted" style="font-size:14px">' +
-          esc(isWrong ? t('wrong_desc') : t('setup_desc')(total)) +
+          esc(isWrong ? t('wrong_desc') : (isSlow ? t('slow_desc') : t('setup_desc')(total))) +
         '</div>' +
       '</div>' +
       '<div class="glass panel">' +
@@ -1636,7 +1665,7 @@ function renderSetup(){
   $('#back').addEventListener('click', ()=> go('home'));
   $('#start').addEventListener('click', ()=>{
     startSession({
-      wrong: isWrong, tplId: state.tplId,
+      wrong: isWrong, slow: isSlow, tplId: state.tplId,
       shufQ: $('#swQ').checked, shufA: $('#swA').checked,
     });
   });
@@ -1742,6 +1771,14 @@ function startSession(opts){
         items.push({ tplId: tid, orig: +oi, q: data()[tid].questions[+oi] });
       });
     });
+  } else if(opts.slow){
+    const s = loadSlow();
+    items = [];
+    Object.keys(s).sort((a,b)=>(+a)-(+b)).forEach(tid=>{
+      Object.keys(s[tid]).sort((a,b)=>(+a)-(+b)).forEach(oi=>{
+        items.push({ tplId: tid, orig: +oi, q: data()[tid].questions[+oi] });
+      });
+    });
   } else if(opts.marathon){
     const pool = allItems();
     const s = loadSRS();
@@ -1769,7 +1806,7 @@ function startSession(opts){
   const minutes = opts.marathon ? Math.ceil(items.length * 1.25) : EXAM_MINUTES;
   if(opts.marathon) clearMarathonState();
   go('exam', {
-    wrong: opts.wrong, marathon: opts.marathon, srs: opts.srs, tplId: opts.tplId,
+    wrong: opts.wrong, slow: opts.slow, marathon: opts.marathon, srs: opts.srs, tplId: opts.tplId,
     shufQ: opts.shufQ, shufA: opts.shufA,
     langAtStart: LANG,
     questions: items,
@@ -1785,7 +1822,7 @@ function startSession(opts){
 /* ---------- EXAM ---------- */
 function renderExam(){
   const total = state.questions.length;
-  const title = state.wrong ? stripEmo(t('wrong_title')) : state.marathon ? stripEmo(t('marathon_title')) : t('tpl_name')(data()[state.tplId].name);
+  const title = state.wrong ? stripEmo(t('wrong_title')) : state.slow ? stripEmo(t('slow_title')) : state.marathon ? stripEmo(t('marathon_title')) : t('tpl_name')(data()[state.tplId].name);
 
   /* Шапка теста: один компактный ряд без переносов.
      Порядок: Назад · название · [гибкий зазор] · счётчик · таймер · пауза · Завершить */
@@ -1999,7 +2036,17 @@ function finishExam(timeout){
     }
   });
   const total = state.questions.length;
-  if(!state.wrong && !state.marathon){
+  /* копилка долгих раздумий: 🐢-вопросы → раздел «Долгие», быстрые ответы — вычищаются */
+  const ansTimes = state.qTimes.map((x,i)=> (x>0 && state.answers[i]!==null) ? x : 0);
+  const avgThinkAllMs = (()=>{ const a = ansTimes.filter(x=>x>0); return a.length ? a.reduce((s,x)=>s+x,0)/a.length : 0; })();
+  state.questions.forEach((it, i)=>{
+    const qt = state.qTimes[i] || 0;
+    if(!qt || state.answers[i] === null) return;
+    const sec = Math.round(qt/1000);
+    if(sec >= 30 || qt > 2*avgThinkAllMs) slowMark(it.tplId, it.orig, sec);
+    else slowRight(it.tplId, it.orig);
+  });
+  if(!state.wrong && !state.slow && !state.marathon){
     const prog = loadProgress();
     const prev = prog[state.tplId];
     if(!prev || correct > prev.correct){
@@ -2007,7 +2054,7 @@ function finishExam(timeout){
       saveProgress(prog);
     }
   }
-  if(!state.wrong) touchHistory(correct, total);
+  if(!state.wrong && !state.slow) touchHistory(correct, total);
   /* учёт времени: раздумья по каждому билету + длительность сессии билета */
   state.qTimes = state.qTimes || new Array(state.questions.length).fill(0);
   const T = loadTime();
@@ -2036,7 +2083,7 @@ function renderResult(){
   const total = state.questions.length;
   const pc = Math.round(correct/total*100);
   const pass = pc >= 70;
-  const nxt = (state.wrong || state.marathon) ? null : nextTplId(state.tplId);
+  const nxt = (state.wrong || state.slow || state.marathon) ? null : nextTplId(state.tplId);
 
   /* строка времени на результате */
   let timeHTML = '';
@@ -2089,7 +2136,7 @@ function renderResult(){
     '<div class="review">' + reviewHTML + '</div>';
 
   $('#retry').addEventListener('click', ()=> startSession({
-    wrong: state.wrong, marathon: state.marathon, tplId: state.tplId,
+    wrong: state.wrong, slow: state.slow, marathon: state.marathon, tplId: state.tplId,
     count: state.marathon ? total : undefined,
     shufQ: state.shufQ, shufA: state.shufA,
   }));
