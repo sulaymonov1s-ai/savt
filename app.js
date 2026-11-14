@@ -22,6 +22,29 @@ const LS_TIME = 'eavt_time_v1';
 /* ---- УЧЁТ ВРЕМЕНИ: сколько минут идёт билет и где пользователь дольше всего думает ---- */
 function loadTime(){ try{ return JSON.parse(localStorage.getItem(LS_TIME)||'{}'); }catch(e){ return {}; } }
 function saveTime(t){ try{ localStorage.setItem(LS_TIME, JSON.stringify(t)); }catch(e){} }
+/* ---- АРХИВ: результаты сброшенного прогресса сохраняются навсегда ---- */
+const LS_ARCHIVE = 'eavt_archive_v1';
+function loadArchive(){ try{ return JSON.parse(localStorage.getItem(LS_ARCHIVE)||'[]'); }catch(e){ return []; } }
+function archiveProgress(){
+  const prog = loadProgress();
+  const ids = Object.keys(prog);
+  if(!ids.length) return;
+  const T = loadTime();
+  const D = data();
+  const items = ids.map(id=>{
+    const p = prog[id];
+    const tt = D[id];
+    const tm = T[id];
+    return { n: tt ? String(tt.name) : id,
+             p: Math.round(p.correct/p.total*100),
+             min: tm && tm.wall ? Math.round(tm.wall/60000) : null,
+             think: tm && tm.cnt ? Math.round(tm.think/tm.cnt/1000) : null };
+  });
+  const avg = Math.round(items.reduce((s,x)=>s+x.p,0)/items.length);
+  const arr = loadArchive();
+  arr.push({ ts: Date.now(), avg: avg, items: items });
+  try{ localStorage.setItem(LS_ARCHIVE, JSON.stringify(arr.slice(-20))); }catch(e){}
+}
 const MSAVE_V = 1;
 const EXAM_MINUTES = 25;
 const IS_MOBILE = matchMedia('(max-width:640px)').matches;
@@ -42,6 +65,7 @@ const ICONS = {
   brain: '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/>',
   wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
   chart: '<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+  archive: '<rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
   moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
   user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
@@ -74,7 +98,10 @@ const I18N = {
     roadmap: 'Дорожная карта',
     marathon: '🏃 Марафон', srs_btn: '🧠 Повторить', wrong_btn: '🛠 Ошибки', reset: 'Сброс',
     best: 'Лучший результат сохранён', not_done: 'Ещё не пройден',
-    reset_title: 'Сброс прогресса', reset_text: 'Удалить результаты и список ошибок?', reset_ok: 'Сбросить',
+    reset_title: 'Сброс прогресса', reset_text: 'Прогресс по билетам будет сброшен. Результаты заархивируются в раздел «Архив», копилка ошибок останется.', reset_ok: 'Сбросить и архивировать',
+    archive: '🗄 Архив', archive_empty: 'Архив пуст. Сбросьте прогресс после прохождения — результаты (проценты, время) сохранятся сюда навсегда.',
+    archive_sub: n => 'Сбросов прогресса: ' + n + ' · ошибки и время сохранены',
+    archive_back: 'На главную',
     q_count: 'вопросов', details: 'Детали теста',
     wrong_desc: 'Собраны все вопросы, на которые вы отвечали неправильно. Ответите верно — вопрос уйдёт из списка.',
     settings: '⚙ Настройки теста',
@@ -157,7 +184,10 @@ const I18N = {
     roadmap: "Yo'l xaritasi",
     marathon: '🏃 Marafon', srs_btn: '🧠 Takrorlash', wrong_btn: '🛠 Xatolar', reset: 'Tozalash',
     best: 'Eng yaxshi natija saqlandi', not_done: 'Hali bajarilmagan',
-    reset_title: 'Progressni tozalash', reset_text: "Natijalar va xatolar ro'yxati o'chirilsinmi?", reset_ok: 'Tozalash',
+    reset_title: 'Progressni tozalash', reset_text: "Biletlar bo'yicha progress tozalanadi. Natijalar «Arxiv» bo'limiga arxivlanadi, xatolar to'plami qoladi.", reset_ok: 'Tozalash va arxivlash',
+    archive: '🗄 Arxiv', archive_empty: 'Arxiv bo\u2018sh. Progressni tozalagach natijalar (foiz, vaqt) bu yerda abadiy saqlanadi.',
+    archive_sub: n => 'Progress tozalashlar: ' + n + ' · xatolar va vaqt saqlangan',
+    archive_back: 'Bosh sahifa',
     q_count: 'savol', details: 'Test tafsilotlari',
     wrong_desc: "Barcha noto'g'ri javob berilgan savollar yig'iladi. To'g'ri javob bersangiz — savol ro'yxatdan o'chadi.",
     settings: '⚙ Test sozlamalari',
@@ -1240,7 +1270,7 @@ function syncFsUI(){
 addEventListener('resize', setExamHeaderVar);
 addEventListener('orientationchange', ()=> setTimeout(setExamHeaderVar, 200));
 
-const routes = { home: renderHome, setup: renderSetup, exam: renderExam, result: renderResult, stats: renderStats, marathon: renderMarathon, auth: renderAuth };
+const routes = { home: renderHome, setup: renderSetup, exam: renderExam, result: renderResult, stats: renderStats, marathon: renderMarathon, auth: renderAuth, archive: renderArchive };
 let state = {};
 
 function go(name, params){
@@ -1450,6 +1480,7 @@ function renderHome(){
       '<button class="modebtn good" id="wrongBtn" title="' + esc(t('wrong_btn').replace(/^🛠\s*/, '')) + '" ' + (wc ? '' : 'disabled') + '>' +
         '<span class="mi">' + icon('wrench') + '</span><span class="mlbl">' + esc(t('wrong_btn').replace(/^🛠\s*/, '')) + '</span><span class="mshort">' + esc(t('w_short')) + '</span>' +
         (wc ? '<span class="cnt">' + wc + '</span>' : '') + '</button>' +
+      '<button class="modebtn" id="archiveBtn" title="' + esc(t('archive')) + '"><span class="mi">' + icon('archive') + '</span><span class="mlbl">' + esc(t('archive').replace(/^🗄\s*/, '')) + '</span></button>' +
       '<button class="modebtn danger" id="resetAll">' + esc(t('reset')) + '</button>' +
     '</div>';
 
@@ -1492,9 +1523,12 @@ function renderHome(){
   $('#marathonBtn').addEventListener('click', ()=> go('marathon'));
   $('#resetAll').addEventListener('click', async ()=>{
     if(await ask(t('reset_title'), t('reset_text'), t('reset_ok'))){
-      localStorage.removeItem(LS_KEY); localStorage.removeItem(LS_WRONG); renderHome();
+      archiveProgress();
+      localStorage.removeItem(LS_KEY); renderHome();
     }
   });
+  const archiveBtn = $('#archiveBtn');
+  if(archiveBtn) archiveBtn.addEventListener('click', ()=> go('archive'));
 
   renderAnalysisCard();
   bindDockGlide();
@@ -2056,6 +2090,36 @@ function renderResult(){
 }
 
 /* ---------- STATS ---------- */
+function renderArchive(){
+  const arr = loadArchive().slice().reverse();
+  const listHTML = arr.length ? arr.map(r=>{
+    const d = new Date(r.ts);
+    const when = d.toLocaleDateString(LANG === 'uz' ? 'uz-UZ' : 'ru-RU') + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    const rows = r.items.map(it=>{
+      const tt = data()[it.n];
+      const nm = tt ? t('tpl_name')(tt.name) : (String(it.n).match(/^\d+$/) ? t('tpl_name')(it.n) : it.n);
+      return '<div class="ar-row"><span>' + esc(nm) + '</span><span class="' + (it.p>=70?'good':'bad') + '">' + it.p + '%</span><span class="muted">' + (it.min !== null ? it.min + ' мин' : '—') + '</span></div>';
+    }).join('');
+    return '<div class="glass panel" style="margin-bottom:14px">' +
+      '<div class="row spread" style="align-items:center;margin-bottom:8px">' +
+        '<b>' + esc(when) + '</b>' +
+        '<span class="chip ' + (r.avg>=70?'good':'bad') + '">' + r.avg + '%</span>' +
+      '</div>' +
+      '<div class="muted" style="margin-bottom:8px">' + r.items.length + ' ' + (LANG==='uz' ? 'bilet' : 'билетов') + '</div>' +
+      rows +
+    '</div>';
+  }).join('') : '<div class="glass panel">' + esc(t('archive_empty')) + '</div>';
+
+  view.innerHTML =
+    '<div class="glass panel roadhead" style="margin-bottom:20px">' +
+      '<div class="roadhead-top">' +
+        '<div><b style="font-size:17px">' + esc(t('archive')) + '</b>' +
+        '<div class="sub">' + esc(t('archive_sub')(arr.length)) + '</div></div>' +
+        '<button class="btn" id="arBack">' + esc(t('archive_back')) + '</button>' +
+      '</div></div>' + listHTML;
+  $('#arBack').addEventListener('click', ()=> go('home'));
+}
+
 function renderStats(){
   const prog = loadProgress();
   const wc = wrongCount();

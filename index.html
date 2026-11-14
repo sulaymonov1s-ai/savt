@@ -477,6 +477,12 @@ body.day .node .body:hover{box-shadow:0 12px 28px rgba(0,0,0,.12), inset 0 1px 0
 }
 .chip.good{color:var(--good);border-color:rgba(52,199,89,.45)}
 .chip.bad{color:var(--bad);border-color:rgba(255,69,58,.45)}
+/* Архив: строки результатов */
+.ar-row{display:flex;justify-content:space-between;gap:10px;padding:6px 2px;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
+.ar-row:last-child{border-bottom:none}
+.ar-row .good{color:var(--good);font-weight:600}
+.ar-row .bad{color:var(--bad);font-weight:600}
+.ar-row .muted{min-width:52px;text-align:right}
 
 /* setup */
 .setup{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px}
@@ -1239,6 +1245,6 @@ body.day .sidemenu .mitem:hover .ico{ filter:drop-shadow(0 0 5px rgba(10,132,255
 <div class="bottombar" id="bottombar"><div class="dots" id="dotsMobile"></div></div>
 
 <script defer src="data.js?v=202611141500"></script>
-<script defer src="app.js?v=202611141600"></script>
+<script defer src="app.js?v=202611141700"></script>
 </body>
 </html>
