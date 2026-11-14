@@ -97,12 +97,12 @@ const I18N = {
     no_wrong: 'ошибок нет',
     badges_ttl: 'Достижения', by_tpl: 'По шаблонам',
     badge_first: 'Первый тест', badge_10: '10 зачётов', badge_clean: 'Чистые ошибки',
-    badge_3days: 'Серия 3 дня', badge_all: 'Все 66 шаблонов',
+    badge_3days: 'Серия 3 дня', badge_all: 'Все 64 шаблона',
     no_data: 'Файл <b>data.js</b> не найден или пуст.<br>Положите его рядом с index.html',
     streak_days: n => n + ' ' + (n === 1 ? 'день' : n < 5 ? 'дня' : 'дней') + ' подряд',
     sub: (n, q) => n + ' шаблона · ' + q + ' вопросов',
     footer: '𝑐𝑟𝑒𝑎𝑡 𝑏𝑦 𝑆𝑢𝑙𝑎𝑦𝑚𝑜𝑛𝑜𝑣.1𝑠',
-    tpl_name: n => 'Шаблон №' + n,
+    tpl_name: n => /^\d+$/.test(String(n)) ? 'Шаблон №' + n : n,
     q_of: (x, y) => 'Вопрос ' + x + ' из ' + y,
     q_num: x => 'Вопрос ' + x,
     roadmap_sub: n => n + ' шаблонов · прогресс сохраняется локально',
@@ -179,12 +179,12 @@ const I18N = {
     no_wrong: "xatolar yo'q",
     badges_ttl: 'Yutuqlar', by_tpl: 'Shablonlar bo‘yicha',
     badge_first: 'Birinchi test', badge_10: "10 o'tish", badge_clean: 'Xatolarsiz',
-    badge_3days: '3 kun seriya', badge_all: 'Barcha 66 shablon',
+    badge_3days: '3 kun seriya', badge_all: 'Barcha 64 shablon',
     no_data: "Fayl <b>data.js</b> topilmadi yoki bo'sh.<br>Uni index.html yoniga qo'ying",
     streak_days: n => n + ' kun ketma-ket',
     sub: (n, q) => n + ' shablon · ' + q + ' savol',
     footer: '𝑐𝑟𝑒𝑎𝑡 𝑏𝑦 𝑆𝑢𝑙𝑎𝑦𝑚𝑜𝑛𝑜𝑣.1𝑠',
-    tpl_name: n => n + '-shablon',
+    tpl_name: n => /^\d+$/.test(String(n)) ? n + '-shablon' : n,
     q_of: (x, y) => x + '-savol / ' + y,
     q_num: x => x + '-savol',
     roadmap_sub: n => n + ' shablon · progress lokal saqlanadi',
@@ -1391,7 +1391,7 @@ function renderHome(){
     const meta = p ? (pc === 100 ? t('stage_perfect') : t('best'))
                    : (id === curId ? t('stage_current') : t('not_done'));
 
-    const mark = cls.indexOf('done') === 0 ? '✓' : esc(tt.name);
+    const mark = cls.indexOf('done') === 0 ? '✓' : (id === '100' ? '🆕' : esc(tt.name));
 
     return '<div class="node ' + cls + '">' +
       '<div class="cardwrap">' +
@@ -2026,7 +2026,7 @@ function renderStats(){
     { ico:'shield', lbl:t('badge_10'), on: doneCnt >= 10 },
     { ico:'wrench', lbl:t('badge_clean'), on: total > 0 && wc === 0 },
     { ico:'flame', lbl:t('badge_3days'), on: streak >= 3 },
-    { ico:'trophy', lbl:t('badge_all'), on: doneCnt >= 66 },
+    { ico:'trophy', lbl:t('badge_all'), on: doneCnt >= 64 },
   ].map(b=> '<div class="badge ' + (b.on?'':'off') + '"><span class="bi">' + icon(b.ico) + '</span><span class="bl">' + b.lbl + '</span></div>').join('');
 
   const rows = sortedIds().map(id=>{
