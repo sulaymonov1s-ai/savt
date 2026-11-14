@@ -875,14 +875,14 @@ function buildAiMessages(context, userQuestion) {
       ? "Sen — do'stona PPD (yo'l harakati xavfsizligi) o'qituvchisisiz. Foydalanuvchi imtihonga tayyorlanadi. Javoblar qisqa, aniq va tushunarli bo'lsin. Murakkab qoidalarni sodda misollar bilan tushuntiring." + BASE_KNOWLEDGE_UZ + baseBlock + timeBlock + SECRET_RULE_UZ
       : "Ты — дружелюбный преподаватель ПДД Узбекистана. Пользователь готовится к экзамену. Отвечай кратко, понятно и по делу. Сложные правила объясняй простыми словами и примерами из жизни. Если спрашивают про знак или ситуацию — уточняй, что изображено, если картинка приложена." + BASE_KNOWLEDGE_RU + baseBlock + timeBlock + SECRET_RULE_RU)
     : ((lang === 'uz')
-      ? "Sen O'zbekistonda PPD (yo'l harakati xavfsizligi) imtihoniga tayyorlanayotgan haydovchi uchun yordamchisisiz. Javobaringiz qisqa, aniq va foydali bo'lishi kerak. Kontekst: savol matni, foydalanuvchi javobi, to'g'ri javob va rasm (agar bo'lsa). Foydalanuvchi savolga javob bering, xatolarni tahlil qiling, yoki oddiroq tushuntiring." + BASE_KNOWLEDGE_UZ + baseBlock + SECRET_RULE_UZ
-      : "Ты — помощник для подготовки к экзамену ПДД в Узбекистане. Отвечай кратко, точно и полезно. Контекст: текст вопроса, ответ пользователя, правильный ответ и изображение (если есть). Отвечай на вопрос пользователя, анализируй ошибки или объясни проще. Учитывай детали на картинке: знаки, разметку, участников движения." + BASE_KNOWLEDGE_RU + baseBlock + SECRET_RULE_RU);
+      ? "Sen O'zbekistonda PPD (yo'l harakati xavfsizligi) imtihoniga tayyorlanayotgan haydovchi uchun yordamchisisiz. Javobaringiz qisqa, aniq va foydali bo'lishi kerak. Kontekst: savol matni, foydalanuvchi javobi, to'g'ri javob va rasm (agar bo'lsa). Foydalanuvchi savolga javob bering, xatolarni tahlil qiling, yoki oddiroq tushuntiring. Savolga ketgan vaqt katta bo'lsa (30 s va ortiq) — savol qiyin bo'lgan: uni batafsil tushuntiring va yodlash uchun oson mnemonika bering." + BASE_KNOWLEDGE_UZ + baseBlock + SECRET_RULE_UZ
+      : "Ты — помощник для подготовки к экзамену ПДД в Узбекистане. Отвечай кратко, точно и полезно. Контекст: текст вопроса, ответ пользователя, правильный ответ и изображение (если есть). Отвечай на вопрос пользователя, анализируй ошибки или объясни проще. Учитывай детали на картинке: знаки, разметку, участников движения. Если время на вопрос большое (30 с и больше) — вопрос оказался сложным: объясни его особенно подробно и дай простую мнемонику для запоминания." + BASE_KNOWLEDGE_RU + baseBlock + SECRET_RULE_RU);
 
   const textBlock = general
     ? userQuestion
     : ((lang === 'uz')
-      ? `\n\nKontekst:\nSavol: ${context.question}\nSizning javobingiz: ${context.userAnswer}\nTo'g'ri javob: ${context.correctAnswer}${context.explanation ? `\nRasmiy tushuntirish: ${context.explanation}` : ''}\n\nFoydalanuvchi savoli: ${userQuestion}`
-      : `\n\nКонтекст:\nВопрос: ${context.question}\nВаш ответ: ${context.userAnswer}\nПравильный ответ: ${context.correctAnswer}${context.explanation ? `\nОфициальное пояснение: ${context.explanation}` : ''}\n\nВопрос пользователя: ${userQuestion}`);
+      ? `\n\nKontekst:\nSavol: ${context.question}\nSizning javobingiz: ${context.userAnswer}\nTo'g'ri javob: ${context.correctAnswer}${context.explanation ? `\nRasmiy tushuntirish: ${context.explanation}` : ''}${context.thinkSec != null ? `\nSavolga sarflangan vaqt: ${context.thinkSec} s` : ''}\n\nFoydalanuvchi savoli: ${userQuestion}`
+      : `\n\nКонтекст:\nВопрос: ${context.question}\nВаш ответ: ${context.userAnswer}\nПравильный ответ: ${context.correctAnswer}${context.explanation ? `\nОфициальное пояснение: ${context.explanation}` : ''}${context.thinkSec != null ? `\nВремя на вопрос: ${context.thinkSec} с` : ''}\n\nВопрос пользователя: ${userQuestion}`);
 
   // Если есть картинка — используем vision формат (массив content)
   const imageBase64 = context ? context.imageBase64 : null;
@@ -978,6 +978,7 @@ function openAiChatFromReview(idx) {
     correctAnswer,
     explanation: q.expl || null,
     isWrong: sel !== null && sel !== okIdx,
+    thinkSec: (state.qTimes && state.qTimes[idx]) ? Math.round(state.qTimes[idx]/1000) : null,
     lang: LANG,
     imageUrl: imgUrl
   });
@@ -2047,10 +2048,16 @@ function renderResult(){
     timeHTML = '<div class="muted" style="margin-top:4px">' + esc(t('time_res')(spentMin || '<1', avgSec)) + '</div>';
   }
 
+  /* среднее время на отвеченный вопрос — чтобы пометить «долгие» (сложные) */
+  const qTimesArr = state.qTimes || [];
+  const answeredTimes = qTimesArr.filter(x=>x>0);
+  const avgThinkMs = answeredTimes.length ? answeredTimes.reduce((s,x)=>s+x,0)/answeredTimes.length : 0;
   const reviewHTML = state.questions.map((it, i)=>{
     const q = it.q;
     const sel = state.answers[i];
     const okIdx = q.answers.findIndex(a=>a.check);
+    const qtSec = Math.round((qTimesArr[i]||0)/1000);
+    const slowQ = qtSec > 0 && (qtSec >= 30 || qTimesArr[i] > 2*avgThinkMs);
     const answersHTML = q.answers.map((a,j)=>{
       let cls = 'ans locked';
       if(j === okIdx) cls += ' ok';
@@ -2059,7 +2066,8 @@ function renderResult(){
     }).join('');
     const expl = q.expl ? '<div class="expl"><b>' + esc(t('expl_lbl')) + '</b> ' + esc(q.expl) + '</div>' : '';
     return '<div class="glass qcard">' +
-      '<div class="qnum">' + esc(t('q_num')(i+1)) + ' ' + (sel===okIdx ? '<span style="color:var(--good)">✓</span>' : '<span style="color:var(--bad)">✗</span>') + '</div>' +
+      '<div class="qnum">' + esc(t('q_num')(i+1)) + ' ' + (sel===okIdx ? '<span style="color:var(--good)">✓</span>' : '<span style="color:var(--bad)">✗</span>') +
+      (qtSec > 0 ? '<span class="qtime' + (slowQ ? ' slow' : '') + '">⏱ ' + qtSec + ' с' + (slowQ ? ' 🐢' : '') + '</span>' : '') + '</div>' +
       '<div class="qtext">' + bodyHTML(q.body) + '</div>' +
       '<div class="answers">' + answersHTML + '</div>' +
       expl + '<div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn ai-btn" onclick="openAiChatFromReview(' + i + ')">' + esc(t('ai_btn')) + '</button></div></div>';
