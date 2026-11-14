@@ -7,7 +7,7 @@ let DATA_UZ = window.EAVT_DATA_UZ || {};
 function ensureUz(cb){
   if(Object.keys(DATA_UZ).length) return cb();
   const s = document.createElement('script');
-  s.src = 'data_uz.js';
+  s.src = 'data_uz.js?v=202611141230';
   s.onload = ()=>{ DATA_UZ = window.EAVT_DATA_UZ || {}; cb(); };
   s.onerror = ()=> cb();
   document.body.appendChild(s);
@@ -97,7 +97,7 @@ const I18N = {
     no_wrong: 'ошибок нет',
     badges_ttl: 'Достижения', by_tpl: 'По шаблонам',
     badge_first: 'Первый тест', badge_10: '10 зачётов', badge_clean: 'Чистые ошибки',
-    badge_3days: 'Серия 3 дня', badge_all: 'Все 63 шаблона',
+    badge_3days: 'Серия 3 дня', badge_all: 'Все 66 шаблонов',
     no_data: 'Файл <b>data.js</b> не найден или пуст.<br>Положите его рядом с index.html',
     streak_days: n => n + ' ' + (n === 1 ? 'день' : n < 5 ? 'дня' : 'дней') + ' подряд',
     sub: (n, q) => n + ' шаблона · ' + q + ' вопросов',
@@ -179,7 +179,7 @@ const I18N = {
     no_wrong: "xatolar yo'q",
     badges_ttl: 'Yutuqlar', by_tpl: 'Shablonlar bo‘yicha',
     badge_first: 'Birinchi test', badge_10: "10 o'tish", badge_clean: 'Xatolarsiz',
-    badge_3days: '3 kun seriya', badge_all: 'Barcha 63 shablon',
+    badge_3days: '3 kun seriya', badge_all: 'Barcha 66 shablon',
     no_data: "Fayl <b>data.js</b> topilmadi yoki bo'sh.<br>Uni index.html yoniga qo'ying",
     streak_days: n => n + ' kun ketma-ket',
     sub: (n, q) => n + ' shablon · ' + q + ' savol',
@@ -1971,7 +1971,7 @@ function renderStats(){
     { ico:'shield', lbl:t('badge_10'), on: doneCnt >= 10 },
     { ico:'wrench', lbl:t('badge_clean'), on: total > 0 && wc === 0 },
     { ico:'flame', lbl:t('badge_3days'), on: streak >= 3 },
-    { ico:'trophy', lbl:t('badge_all'), on: doneCnt >= 63 },
+    { ico:'trophy', lbl:t('badge_all'), on: doneCnt >= 66 },
   ].map(b=> '<div class="badge ' + (b.on?'':'off') + '"><span class="bi">' + icon(b.ico) + '</span><span class="bl">' + b.lbl + '</span></div>').join('');
 
   const rows = sortedIds().map(id=>{
