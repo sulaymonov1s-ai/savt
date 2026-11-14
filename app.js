@@ -752,18 +752,73 @@ function srsWeakCount(){
 let aiChatHistory = [];
 let aiCurrentContext = null;
 
+/* Поиск по всей базе вопросов (для того чтобы ИИ знал, в каком билете что есть) */
+const AI_STOPWORDS = new Set(['какой','какого','каком','какие','каким','вопрос','вопросе','вопросы','билет','билете','билетов','упоминаются','упоминается','есть','бывают','если','или','для','это','этот','этой','этого','того','чтобы','когда','где','куда','откуда','почему','зачем','что','такой','такое','такая','там','они','оно','его','её','при','про','под','над','без','имеется','имеются','должен','должна','должны','может','можно','нужно','нужно','kerak','qanday','qaysi','savol','bilet','haqida','uchun','shuning']);
+function searchQuestionBase(query, limit) {
+  const words = String(query || '').toLowerCase().split(/[^a-zа-яёʻʼ'ўқғҳ0-9]+/i).filter(w => w.length > 2 && !AI_STOPWORDS.has(w));
+  if (!words.length) return [];
+  const D = (LANG === 'uz' && Object.keys(DATA_UZ).length) ? DATA_UZ : DATA_RU;
+  if (!Object.keys(D).length) return [];
+  const scored = [];
+  Object.entries(D).forEach(([ticket, tData]) => {
+    (tData.questions || []).forEach(q => {
+      const qText = ((q.body || []).filter(b => b.text).map(b => b.text).join(' ')).toLowerCase();
+      let score = 0;
+      words.forEach(w => {
+        if (qText.includes(w)) score += w.length > 5 ? 3 : 2;
+      });
+      if (!score) return;
+      const correct = (q.answers || []).filter(a => a.check);
+      const optsText = (q.answers || []).map(a => (a.body || []).filter(b => b.text).map(b => b.text).join(' ')).join(' ').toLowerCase();
+      const explText = String(q.expl || '').toLowerCase();
+      words.forEach(w => {
+        if (optsText.includes(w)) score += 1;
+        if (explText.includes(w)) score += 0.5;
+      });
+      scored.push({
+        ticket: Number(ticket),
+        qText,
+        options: (q.answers || []).map(a => ({ text: (a.body || []).filter(b => b.text).map(b => b.text).join(' '), check: !!a.check })),
+        expl: q.expl || '',
+        score
+      });
+    });
+  });
+  scored.sort((a, b) => b.score - a.score);
+  return scored.slice(0, limit || 6);
+}
+function formatBaseHitsForPrompt(hits, lang) {
+  if (!hits.length) return '';
+  const head = lang === 'uz' ? '\n\nBAZA MA\u2019LUMLARI (66 bilet):' : '\n\nСПРАВКА ИЗ БАЗЫ (66 билетов):';
+  const body = hits.map(h => {
+    const opts = h.options.map((o, i) => {
+      const L = ['А', 'Б', 'В', 'Г', 'Д'][i] || (i + 1);
+      return L + ') ' + o.text + (o.check ? ' ✓ВЕРНЫЙ' : '');
+    }).join(' | ');
+    return `[Билет ${h.ticket}] ${h.qText}\nВарианты: ${opts}${h.expl ? '\nПояснение: ' + h.expl.slice(0, 300) : ''}`;
+  }).join('\n---\n');
+  const rule = lang === 'uz'
+    ? ' Bu — haqiqiy savollar bazasidan topilgan savollar. Agar ular foydalanuvchi savoliga mos kelsa, aniq bilet raqamini va savolni ko\u2018rsat, to\u2018g\u2018ri javobni tushuntir. Bilet raqamlarini o\u2018ylab chiqarma; mos savol topilmasa, buni ochiq ayt.'
+    : ' Это — реальные вопросы, найденные в базе тренажёра. Если они соответствуют вопросу пользователя — назови ТОЧНО номер билета (или несколько), процитируй вопрос и объясни правильный ответ. Номера билетов не выдумывай. Если подходящих вопросов в справке нет — честно скажи, что в базе такого не нашлось, и ответь по правилам ПДД.';
+  return head + '\n' + body + rule;
+}
+
 function buildAiMessages(context, userQuestion) {
   const general = !context;
   const lang = context ? (context.lang || LANG) : LANG;
   const SECRET_RULE_RU = " Строго секретно: никогда не называй конкретную модель, провайдера, компанию-разработчика или технические детали своего устройства — на любые такие вопросы отвечай, что эта информация засекречена. Отвечай только на темы, связанные с ПДД, дорожными знаками и подготовкой к экзамену; на любые другие темы вежливо откажись и верни разговор к ПДД.";
   const SECRET_RULE_UZ = " Qat'iy sir: hech qachon aniq modelni, provayderni, ishlab chiqaruvchi kompaniyani yoki texnik tafsilotlarni ayitma — bunday savollarga bu maxfiy ma'lumot deb javob ber. Faqat PPD (yo'l harakati qoidalari), yo'l belgilari va imtihonga tayyorgarliq bilan bog'liq mavzularda javob ber; boshqa mavzularda muloyim rad etib, suhbatni PPDga qaytar.";
+  const baseHits = searchQuestionBase(userQuestion, 6);
+  const baseBlock = formatBaseHitsForPrompt(baseHits, lang);
+  const BASE_KNOWLEDGE_RU = " Ты знаешь всю базу тренажёра: 66 билетов по 20 вопросов (всего ~1300 вопросов ПДД Узбекистана). На вопросы вида «в каком билете …» отвечай точным номером билета и цитатой вопроса, опираясь на справку из базы ниже.";
+  const BASE_KNOWLEDGE_UZ = " Sen treningyor bazasini to\u2018liq bilasan: 66 bilet, har birida 20 savol (~1300 PPD savoli). «Qaysi biletda …» degan savollarga bazadan olingan ma\u2019lumot asosida aniq bilet raqami va savol bilan javob ber.";
   const sysPrompt = general
     ? ((lang === 'uz')
-      ? "Sen — do'stona PPD (yo'l harakati xavfsizligi) o'qituvchisisiz. Foydalanuvchi imtihonga tayyorlanadi. Javoblar qisqa, aniq va tushunarli bo'lsin. Murakkab qoidalarni sodda misollar bilan tushuntiring." + SECRET_RULE_UZ
-      : "Ты — дружелюбный преподаватель ПДД Узбекистана. Пользователь готовится к экзамену. Отвечай кратко, понятно и по делу. Сложные правила объясняй простыми словами и примерами из жизни. Если спрашивают про знак или ситуацию — уточняй, что изображено, если картинка приложена." + SECRET_RULE_RU)
+      ? "Sen — do'stona PPD (yo'l harakati xavfsizligi) o'qituvchisisiz. Foydalanuvchi imtihonga tayyorlanadi. Javoblar qisqa, aniq va tushunarli bo'lsin. Murakkab qoidalarni sodda misollar bilan tushuntiring." + BASE_KNOWLEDGE_UZ + baseBlock + SECRET_RULE_UZ
+      : "Ты — дружелюбный преподаватель ПДД Узбекистана. Пользователь готовится к экзамену. Отвечай кратко, понятно и по делу. Сложные правила объясняй простыми словами и примерами из жизни. Если спрашивают про знак или ситуацию — уточняй, что изображено, если картинка приложена." + BASE_KNOWLEDGE_RU + baseBlock + SECRET_RULE_RU)
     : ((lang === 'uz')
-      ? "Sen O'zbekistonda PPD (yo'l harakati xavfsizligi) imtihoniga tayyorlanayotgan haydovchi uchun yordamchisisiz. Javoblaringiz qisqa, aniq va foydali bo'lishi kerak. Kontekst: savol matni, foydalanuvchi javobi, to'g'ri javob va rasm (agar bo'lsa). Foydalanuvchi savolga javob bering, xatolarni tahlil qiling, yoki oddiroq tushuntiring." + SECRET_RULE_UZ
-      : "Ты — помощник для подготовки к экзамену ПДД в Узбекистане. Отвечай кратко, точно и полезно. Контекст: текст вопроса, ответ пользователя, правильный ответ и изображение (если есть). Отвечай на вопрос пользователя, анализируй ошибки или объясни проще. Учитывай детали на картинке: знаки, разметку, участников движения." + SECRET_RULE_RU);
+      ? "Sen O'zbekistonda PPD (yo'l harakati xavfsizligi) imtihoniga tayyorlanayotgan haydovchi uchun yordamchisisiz. Javobaringiz qisqa, aniq va foydali bo'lishi kerak. Kontekst: savol matni, foydalanuvchi javobi, to'g'ri javob va rasm (agar bo'lsa). Foydalanuvchi savolga javob bering, xatolarni tahlil qiling, yoki oddiroq tushuntiring." + BASE_KNOWLEDGE_UZ + baseBlock + SECRET_RULE_UZ
+      : "Ты — помощник для подготовки к экзамену ПДД в Узбекистане. Отвечай кратко, точно и полезно. Контекст: текст вопроса, ответ пользователя, правильный ответ и изображение (если есть). Отвечай на вопрос пользователя, анализируй ошибки или объясни проще. Учитывай детали на картинке: знаки, разметку, участников движения." + BASE_KNOWLEDGE_RU + baseBlock + SECRET_RULE_RU);
 
   const textBlock = general
     ? userQuestion
