@@ -84,6 +84,7 @@ const ICONS = {
   wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
   chart: '<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
   archive: '<rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>',
+  book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
   clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
   moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
@@ -119,6 +120,9 @@ const I18N = {
     best: 'Лучший результат сохранён', not_done: 'Ещё не пройден',
     reset_title: 'Сброс прогресса', reset_text: 'Прогресс по билетам будет сброшен. Результаты заархивируются в раздел «Архив», копилка ошибок останется.', reset_ok: 'Сбросить и архивировать',
     archive: '🗄 Архив', archive_empty: 'Архив пуст. Сбросьте прогресс после прохождения — результаты (проценты, время) сохранятся сюда навсегда.',
+    topics: '📚 Темы', topic_solve: '▶ Решать тему', dup_badge: 'повторы', rephr_badge: 'перефразы',
+    topics_sub: (t, d) => t + ' тем · ' + d + ' кластеров повторов · каждое «слабое» место видно в теме',
+    topic_weak: n => n + ' слабых',
     archive_sub: n => 'Сбросов прогресса: ' + n + ' · ошибки и время сохранены',
     archive_back: 'На главную',
     q_count: 'вопросов', details: 'Детали теста',
@@ -207,6 +211,9 @@ const I18N = {
     best: 'Eng yaxshi natija saqlandi', not_done: 'Hali bajarilmagan',
     reset_title: 'Progressni tozalash', reset_text: "Biletlar bo'yicha progress tozalanadi. Natijalar «Arxiv» bo'limiga arxivlanadi, xatolar to'plami qoladi.", reset_ok: 'Tozalash va arxivlash',
     archive: '🗄 Arxiv', archive_empty: 'Arxiv bo\u2018sh. Progressni tozalagach natijalar (foiz, vaqt) bu yerda abadiy saqlanadi.',
+    topics: '📚 Mavzular', topic_solve: '▶ Mavzuni yechish', dup_badge: 'takrorlar', rephr_badge: 'qayta shakllar',
+    topics_sub: (t, d) => t + ' mavzu · ' + d + ' takror guruhi · har bir qiyin joy mavzuda ko\u2018rinadi',
+    topic_weak: n => n + ' qiyin',
     archive_sub: n => 'Progress tozalashlar: ' + n + ' · xatolar va vaqt saqlangan',
     archive_back: 'Bosh sahifa',
     q_count: 'savol', details: 'Test tafsilotlari',
@@ -1294,7 +1301,7 @@ function syncFsUI(){
 addEventListener('resize', setExamHeaderVar);
 addEventListener('orientationchange', ()=> setTimeout(setExamHeaderVar, 200));
 
-const routes = { home: renderHome, setup: renderSetup, exam: renderExam, result: renderResult, stats: renderStats, marathon: renderMarathon, auth: renderAuth, archive: renderArchive };
+const routes = { home: renderHome, setup: renderSetup, exam: renderExam, result: renderResult, stats: renderStats, marathon: renderMarathon, auth: renderAuth, archive: renderArchive, topics: renderTopics, topic: renderTopic };
 let state = {};
 
 function go(name, params){
@@ -1507,6 +1514,7 @@ function renderHome(){
       '<button class="modebtn warn" id="slowBtn" title="' + esc(t('slow_title').replace(/^🐢\s*/, '')) + '" ' + (slowCount() ? '' : 'disabled') + '>' +
         '<span class="mi">' + icon('clock') + '</span><span class="mlbl">' + esc(t('slow_btn').replace(/^🐢\s*/, '')) + '</span><span class="mshort">' + esc(t('slow_btn').replace(/^🐢\s*/, '').slice(0, 6)) + '</span>' +
         (slowCount() ? '<span class="cnt">' + slowCount() + '</span>' : '') + '</button>' +
+      '<button class="modebtn" id="topicsBtn" title="' + esc(t('topics')) + '"><span class="mi">' + icon('book') + '</span><span class="mlbl">' + esc(t('topics').replace(/^📚\s*/, '')) + '</span><span class="mshort">' + esc((LANG==='uz'?'Mav':'Тем').slice(0,6)) + '</span></button>' +
       '<button class="modebtn" id="archiveBtn" title="' + esc(t('archive')) + '"><span class="mi">' + icon('archive') + '</span><span class="mlbl">' + esc(t('archive').replace(/^🗄\s*/, '')) + '</span></button>' +
       '<button class="modebtn danger" id="resetAll">' + esc(t('reset')) + '</button>' +
     '</div>';
@@ -1557,6 +1565,8 @@ function renderHome(){
   });
   const archiveBtn = $('#archiveBtn');
   if(archiveBtn) archiveBtn.addEventListener('click', ()=> go('archive'));
+  const topicsBtn = $('#topicsBtn');
+  if(topicsBtn) topicsBtn.addEventListener('click', ()=> go('topics'));
 
   renderAnalysisCard();
   bindDockGlide();
@@ -1771,6 +1781,9 @@ function startSession(opts){
         items.push({ tplId: tid, orig: +oi, q: data()[tid].questions[+oi] });
       });
     });
+  } else if(opts.topic){
+    const tp = ((window.EAVT_TOPICS||{}).topics||[]).find(x=>x.id===opts.topic);
+    items = (tp ? tp.refs : []).map(ref=>({ tplId: ref[0], orig: ref[1], q: data()[ref[0]].questions[ref[1]] }));
   } else if(opts.slow){
     const s = loadSlow();
     items = [];
@@ -1803,10 +1816,10 @@ function startSession(opts){
     const aOrder = shuffle(it.q.answers.map((_,i)=>i));
     return { tplId: it.tplId, orig: it.orig, aOrder: aOrder, q: { body: it.q.body, expl: it.q.expl, answers: aOrder.map(ai=>it.q.answers[ai]) } };
   });
-  const minutes = opts.marathon ? Math.ceil(items.length * 1.25) : EXAM_MINUTES;
+  const minutes = opts.marathon ? Math.ceil(items.length * 1.25) : (opts.topic ? Math.ceil(items.length * 1.25) : EXAM_MINUTES);
   if(opts.marathon) clearMarathonState();
   go('exam', {
-    wrong: opts.wrong, slow: opts.slow, marathon: opts.marathon, srs: opts.srs, tplId: opts.tplId,
+    wrong: opts.wrong, slow: opts.slow, topic: opts.topic, marathon: opts.marathon, srs: opts.srs, tplId: opts.tplId,
     shufQ: opts.shufQ, shufA: opts.shufA,
     langAtStart: LANG,
     questions: items,
@@ -1822,7 +1835,8 @@ function startSession(opts){
 /* ---------- EXAM ---------- */
 function renderExam(){
   const total = state.questions.length;
-  const title = state.wrong ? stripEmo(t('wrong_title')) : state.slow ? stripEmo(t('slow_title')) : state.marathon ? stripEmo(t('marathon_title')) : t('tpl_name')(data()[state.tplId].name);
+  const topicName = state.topic ? (((window.EAVT_TOPICS||{}).topics||[]).find(x=>x.id===state.topic)||{}).ru : null;
+  const title = state.wrong ? stripEmo(t('wrong_title')) : state.slow ? stripEmo(t('slow_title')) : topicName ? stripEmo((LANG==='uz' ? (((window.EAVT_TOPICS||{}).topics||[]).find(x=>x.id===state.topic)||{}).uz : topicName)) : state.marathon ? stripEmo(t('marathon_title')) : t('tpl_name')(data()[state.tplId].name);
 
   /* Шапка теста: один компактный ряд без переносов.
      Порядок: Назад · название · [гибкий зазор] · счётчик · таймер · пауза · Завершить */
@@ -2046,7 +2060,7 @@ function finishExam(timeout){
     if(sec >= 30 || qt > 2*avgThinkAllMs) slowMark(it.tplId, it.orig, sec);
     else slowRight(it.tplId, it.orig);
   });
-  if(!state.wrong && !state.slow && !state.marathon){
+  if(!state.wrong && !state.slow && !state.topic && !state.marathon){
     const prog = loadProgress();
     const prev = prog[state.tplId];
     if(!prev || correct > prev.correct){
@@ -2054,7 +2068,7 @@ function finishExam(timeout){
       saveProgress(prog);
     }
   }
-  if(!state.wrong && !state.slow) touchHistory(correct, total);
+  if(!state.wrong && !state.slow && !state.topic) touchHistory(correct, total);
   /* учёт времени: раздумья по каждому билету + длительность сессии билета */
   state.qTimes = state.qTimes || new Array(state.questions.length).fill(0);
   const T = loadTime();
@@ -2083,7 +2097,7 @@ function renderResult(){
   const total = state.questions.length;
   const pc = Math.round(correct/total*100);
   const pass = pc >= 70;
-  const nxt = (state.wrong || state.slow || state.marathon) ? null : nextTplId(state.tplId);
+  const nxt = (state.wrong || state.slow || state.topic || state.marathon) ? null : nextTplId(state.tplId);
 
   /* строка времени на результате */
   let timeHTML = '';
@@ -2136,7 +2150,7 @@ function renderResult(){
     '<div class="review">' + reviewHTML + '</div>';
 
   $('#retry').addEventListener('click', ()=> startSession({
-    wrong: state.wrong, slow: state.slow, marathon: state.marathon, tplId: state.tplId,
+    wrong: state.wrong, slow: state.slow, topic: state.topic, marathon: state.marathon, tplId: state.tplId,
     count: state.marathon ? total : undefined,
     shufQ: state.shufQ, shufA: state.shufA,
   }));
@@ -2145,6 +2159,82 @@ function renderResult(){
 }
 
 /* ---------- STATS ---------- */
+/* ---------- ТЕМЫ (кластеры вопросов + повторы/перефразы) ---------- */
+function tpWeakCount(t){
+  const w = loadWrong(), s = loadSlow();
+  return t.refs.filter(ref=> (w[ref[0]] && w[ref[0]][ref[1]] !== undefined) || (s[ref[0]] && s[ref[0]][ref[1]] !== undefined)).length;
+}
+function tpDupIndex(){
+  const TP = window.EAVT_TOPICS || {};
+  const idx = {};
+  (TP.dupes||[]).forEach(c=> c.refs.forEach(ref=>{ const k = ref[0]+':'+ref[1]; idx[k] = { n: c.refs.length, ph: false }; }));
+  (TP.rephrased||[]).forEach(c=>{
+    [c.canon].concat(c.variants).forEach(ref=>{
+      const k = ref[0]+':'+ref[1];
+      if(idx[k]) idx[k].ph = true; else idx[k] = { n: c.variants.length + 1, ph: true };
+    });
+  });
+  return idx;
+}
+function renderTopics(){
+  const TP = window.EAVT_TOPICS || { topics: [] };
+  const lang = LANG === 'uz' ? 'uz' : 'ru';
+  const cards = TP.topics.map(tp=>{
+    const weak = tpWeakCount(tp);
+    return '<div class="glass panel tp-card" data-tid="' + esc(tp.id) + '">' +
+      '<div class="row spread"><b>' + esc(lang==='uz' ? tp.uz : tp.ru) + '</b><span class="pctbadge">' + tp.refs.length + '</span></div>' +
+      '<div class="muted" style="font-size:12px;margin-top:2px">' + esc(lang==='uz' ? tp.ru : tp.uz) + '</div>' +
+      (weak ? '<div class="chip bad" style="margin-top:8px;display:inline-block">' + esc(t('topic_weak')(weak)) + '</div>' : '<div class="chip good" style="margin-top:8px;display:inline-block">✓</div>') +
+      '<button class="btn good" style="margin-top:10px;width:100%">' + esc(t('topic_solve')) + '</button>' +
+    '</div>';
+  }).join('');
+  view.innerHTML =
+    '<div class="glass panel roadhead" style="margin-bottom:20px">' +
+      '<div class="roadhead-top">' +
+        '<div><b style="font-size:17px">' + esc(t('topics')) + '</b>' +
+        '<div class="sub">' + esc(t('topics_sub')(TP.topics.length, (TP.dupes||[]).length)) + '</div></div>' +
+        '<button class="btn" id="tpBack">' + esc(t('archive_back')) + '</button>' +
+      '</div></div>' +
+    '<div class="tp-grid">' + cards + '</div>';
+  $('#tpBack').addEventListener('click', ()=> go('home'));
+  document.querySelectorAll('.tp-card').forEach(card=>{
+    card.addEventListener('click', ()=> go('topic', { tid: card.dataset.tid }));
+    const btn = card.querySelector('.btn');
+    if(btn) btn.addEventListener('click', e=>{ e.stopPropagation(); startSession({ topic: card.dataset.tid, shufQ: true, shufA: true }); });
+  });
+}
+function renderTopic(){
+  const TP = window.EAVT_TOPICS || { topics: [] };
+  const tp = TP.topics.find(x=>x.id===state.tid) || TP.topics[0];
+  const lang = LANG === 'uz' ? 'uz' : 'ru';
+  const dIdx = tpDupIndex();
+  const rows = tp.refs.map(ref=>{
+    const q = data()[ref[0]].questions[ref[1]];
+    const corr = q.answers.find(a=>a.check);
+    const d = dIdx[ref[0]+':'+ref[1]];
+    const badge = d ? '<span class="dupchip">' + (d.ph ? esc(t('rephr_badge')) + ' ' : '') + '×' + d.n + '</span>' : '';
+    const corrText = corr ? (corr.body||[]).filter(b=>b.text).map(b=>b.text).join(' ') : '';
+    return '<div class="glass panel tp-q">' +
+      '<div class="row spread" style="margin-bottom:4px"><span class="muted" style="font-size:12px">' + esc(t('tpl_name')(ref[0])) + '</span>' + badge + '</div>' +
+      '<div style="font-weight:600">' + bodyHTML(q.body, 'text') + '</div>' +
+      (hasImg(q.body) ? '<div class="qimg" style="margin-top:6px">' + bodyHTML(q.body, 'img') + '</div>' : '') +
+      '<div class="tp-ok">' + esc(corrText) + '</div>' +
+      (q.expl ? '<details style="margin-top:6px"><summary style="cursor:pointer;color:#2563eb;font-size:13px">' + esc(t('expl_lbl')) + '</summary><p style="white-space:pre-line;font-size:13px;color:#43505e;margin:6px 0 0">' + esc(q.expl) + '</p></details>' : '') +
+    '</div>';
+  }).join('');
+  const weak = tpWeakCount(tp);
+  view.innerHTML =
+    '<div class="glass panel roadhead" style="margin-bottom:20px">' +
+      '<div class="roadhead-top">' +
+        '<div><b style="font-size:17px">' + esc(lang==='uz' ? tp.uz : tp.ru) + '</b>' +
+        '<div class="sub">' + tp.refs.length + ' · ' + esc(t('topic_weak')(weak)) + '</div></div>' +
+        '<div><button class="btn good" id="tpSolve">' + esc(t('topic_solve')) + '</button> ' +
+        '<button class="btn" id="tpBack">' + esc(t('archive_back')) + '</button></div>' +
+      '</div></div>' + rows;
+  $('#tpBack').addEventListener('click', ()=> go('topics'));
+  $('#tpSolve').addEventListener('click', ()=> startSession({ topic: tp.id, shufQ: true, shufA: true }));
+}
+
 function renderArchive(){
   const arr = loadArchive().slice().reverse();
   const listHTML = arr.length ? arr.map(r=>{
