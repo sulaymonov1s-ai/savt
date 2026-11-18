@@ -116,31 +116,31 @@ const I18N = {
     cancel: 'Отмена', yes: 'Да',
     back: '← Назад',
     roadmap: 'Дорожная карта',
-    marathon: '🏃 Марафон', srs_btn: '🧠 Повторить', wrong_btn: '🛠 Ошибки', reset: 'Сброс',
+    marathon: 'Марафон', srs_btn: 'Повторить', wrong_btn: 'Ошибки', reset: 'Сброс',
     best: 'Лучший результат сохранён', not_done: 'Ещё не пройден',
     reset_title: 'Сброс прогресса', reset_text: 'Прогресс по билетам будет сброшен. Результаты заархивируются в раздел «Архив», копилка ошибок останется.', reset_ok: 'Сбросить и архивировать',
-    archive: '🗄 Архив', archive_empty: 'Архив пуст. Сбросьте прогресс после прохождения — результаты (проценты, время) сохранятся сюда навсегда.',
-    topics: '📚 Темы', topic_solve: '▶ Решать тему', dup_badge: 'повторы', rephr_badge: 'перефразы',
+    archive: 'Архив', archive_empty: 'Архив пуст. Сбросьте прогресс после прохождения — результаты (проценты, время) сохранятся сюда навсегда.',
+    topics: 'Темы', topic_solve: '▶ Решать тему', dup_badge: 'повторы', rephr_badge: 'перефразы',
     topics_sub: (t, d) => t + ' тем · ' + d + ' кластеров повторов · каждое «слабое» место видно в теме',
     topic_weak: n => n + ' слабых',
     archive_sub: n => 'Сбросов прогресса: ' + n + ' · ошибки и время сохранены',
     archive_back: 'На главную',
     q_count: 'вопросов', details: 'Детали теста',
     wrong_desc: 'Собраны все вопросы, на которые вы отвечали неправильно. Ответите верно — вопрос уйдёт из списка.',
-    settings: '⚙ Настройки теста',
+    settings: 'Настройки теста',
     shuf_q: 'Перемешать вопросы', shuf_qd: 'Вопросы в разном порядке каждый раз',
     shuf_a: 'Перемешать ответы', shuf_ad: 'Варианты ответов меняются местами',
     start_test: '▶ Начать тест',
     total_q: 'вопросов всего', repeat_label: 'к повторению',
-    srs_title: '🧠 Умное повторение',
-    marathon_title: '🏃 Марафон',
+    srs_title: 'Умное повторение',
+    marathon_title: 'Марафон',
     srs_desc: 'Метод интервальных повторений: вопросы возвращаются через 10 мин → 1 день → 3 дня → 7 дней → 30 дней. Так мозг запоминает надолго.',
     marathon_desc: 'Вопросы из всех шаблонов. Слабые вопросы показываются чаще. Выберите сколько решить.',
     amount: 'Количество вопросов',
     start_repeat: '▶ Начать повторение', start_marathon: '▶ Начать марафон',
-    wrong_title: '🛠 Работа над ошибками',
-    slow_btn: '🐢 Долгие', slow_title: '🐢 Долгие раздумья',
-    slow_desc: 'Вопросы, над которыми ты думал дольше всего (⏱ 30 с и больше или вдвое дольше обычного). Ответишь быстро — вопрос сам покинет этот список.',
+    wrong_title: 'Работа над ошибками',
+    slow_btn: 'Долгие', slow_title: 'Долгие раздумья',
+    slow_desc: 'Вопросы, над которыми ты думал дольше всего (30 с и больше или вдвое дольше обычного). Ответишь быстро — вопрос сам покинет этот список.',
     finish: 'Завершить',
     exit_title: 'Выйти из теста?', exit_text: 'Прогресс этой попытки не сохранится.', exit_ok: 'Выйти',
     finish_title: 'Завершить тест?',
@@ -149,12 +149,12 @@ const I18N = {
     timeout: 'Время вышло', pass: 'Зачёт', fail: 'Незачёт (нужно ≥70%)',
     home_btn: 'К шаблонам', retry: 'Ещё раз', next_tpl: 'Следующий шаблон →',
     review: 'Разбор ответов', expl_lbl: 'Пояснение:',
-    stats_title: '📊 Успеваемость', right_ans: 'верных ответов',
+    stats_title: 'Успеваемость', right_ans: 'верных ответов',
     no_wrong: 'ошибок нет',
     badges_ttl: 'Достижения', by_tpl: 'По шаблонам',
     badge_first: 'Первый тест', badge_10: '10 зачётов', badge_clean: 'Чистые ошибки',
     badge_3days: 'Серия 3 дня', badge_all: 'Все 64 шаблона',
-    time_res: (m, s) => '⏱ Время: ' + m + ' мин · в среднем ' + s + ' с размышлений на вопрос',
+    time_res: (m, s) => 'Время: ' + m + ' мин · в среднем ' + s + ' с размышлений на вопрос',
     no_data: 'Файл <b>data.js</b> не найден или пуст.<br>Положите его рядом с index.html',
     streak_days: n => n + ' ' + (n === 1 ? 'день' : n < 5 ? 'дня' : 'дней') + ' подряд',
     sub: (n, q) => n + ' шаблона · ' + q + ' вопросов',
@@ -167,7 +167,7 @@ const I18N = {
     wrong_work: n => n + ' в работе над ошибками',
     weak: n => n + ' слабых вопросов',
     of_total: n => 'из ' + n,
-    due: n => '🧠 ' + n + ' к повторению',
+    due: n => n + ' к повторению',
     unanswered: n => 'Осталось без ответа: ' + n + '.',
     setup_desc: n => 'Тест состоит из ' + n + ' вопросов. Таймер 25 минут. Правильность ответов видна при возврате к вопросу и в разборе в конце.',
     letters: 'АБВГДЕЖЗ',
@@ -198,7 +198,7 @@ const I18N = {
     stage_current: 'Следующий этап',
     stage_perfect: 'Пройден на 100%',
     modes: 'Режимы',
-    ai_btn: '🤖 ИИ-помощник', ai_title: 'Чат с ИИ', ai_placeholder: 'Спросите про этот вопрос...', ai_thinking: 'ИИ думает...', ai_error: 'Ошибка ИИ, попробуйте позже', ai_context_q: 'Вопрос:', ai_context_a: 'Ваш ответ:', ai_context_correct: 'Правильный ответ:', ai_prompt_hint: 'Можете спросить: почему это правильный ответ, разбор ошибки, похожие ситуации, просто объяснить проще.', ai_fab_title: 'ИИ-помощник по ПДД', ai_general_title: 'ИИ-помощник по ПДД', ai_general_placeholder: 'Спросите что угодно про ПДД...', ai_send: '➤', ai_timeout: 'ИИ не ответил (таймаут). Попробуйте ещё раз.', aa_title: 'ИИ-анализ слабых мест', aa_morning: 'утренний', aa_evening: 'вечерний', aa_loading: 'ИИ изучает ваш прогресс…', aa_weak: 'Слабые места', aa_plan: 'План на сегодня', aa_train: '▶ Тренировать слабые места', aa_error: 'Не удалось получить анализ', aa_fresh: 'Обновить анализ', aa_login_cta: 'Войдите в аккаунт, чтобы 2 раза в день получать персональный ИИ-анализ слабых мест.',
+    ai_btn: 'ИИ-помощник', ai_title: 'Чат с ИИ', ai_placeholder: 'Спросите про этот вопрос...', ai_thinking: 'ИИ думает...', ai_error: 'Ошибка ИИ, попробуйте позже', ai_context_q: 'Вопрос:', ai_context_a: 'Ваш ответ:', ai_context_correct: 'Правильный ответ:', ai_prompt_hint: 'Можете спросить: почему это правильный ответ, разбор ошибки, похожие ситуации, просто объяснить проще.', ai_fab_title: 'ИИ-помощник по ПДД', ai_general_title: 'ИИ-помощник по ПДД', ai_general_placeholder: 'Спросите что угодно про ПДД...', ai_send: '→', ai_timeout: 'ИИ не ответил (таймаут). Попробуйте ещё раз.', aa_title: 'ИИ-анализ слабых мест', aa_morning: 'утренний', aa_evening: 'вечерний', aa_loading: 'ИИ изучает ваш прогресс…', aa_weak: 'Слабые места', aa_plan: 'План на сегодня', aa_train: 'Тренировать слабые места', aa_error: 'Не удалось получить анализ', aa_fresh: 'Обновить анализ', aa_login_cta: 'Войдите в аккаунт, чтобы 2 раза в день получать персональный ИИ-анализ слабых мест.',
     auth_title: 'Аккаунт', login: 'Войти', register: 'Регистрация', email: 'Email', password: 'Пароль', logout: 'Выйти', sync: 'Синхронизировать', sync_ok: '✓ Прогресс синхронизирован', sync_fail: '✗ Ошибка синхронизации', auth_err_email: 'Некорректный email', auth_err_pass: 'Пароль от 6 символов', auth_err: 'Ошибка: проверьте данные', auth_exists: 'Такой email уже зарегистрирован', auth_bad: 'Неверный email или пароль', auth_login_tab: 'Вход', auth_reg_tab: 'Регистрация', auth_signed: '✓ Вход выполнен', auth_bye: 'Вы вышли из аккаунта', auth_net: 'Нет соединения с сервером. Проверьте интернет и попробуйте ещё раз.', auth_confirm_title: 'Подтвердите вход', auth_confirm_hint: 'Для защиты прогресса подтвердите вход — введите пароль. Это раз в неделю.', auth_skip: 'Продолжить без аккаунта', splash_tagline: 'Тренажёр экзамена ПДД', mistakes_focus: n => 'Фокус на повторных ошибках: ' + n, repeated_mistakes: n => 'Повторные ошибки: ' + n, marathon_focus_note: 'Вопросы, в которых вы ошибались, показываются чаще и в начале.'
   },
   uz: {
@@ -207,31 +207,31 @@ const I18N = {
     cancel: 'Bekor qilish', yes: 'Ha',
     back: '← Orqaga',
     roadmap: "Yo'l xaritasi",
-    marathon: '🏃 Marafon', srs_btn: '🧠 Takrorlash', wrong_btn: '🛠 Xatolar', reset: 'Tozalash',
+    marathon: 'Marafon', srs_btn: 'Takrorlash', wrong_btn: 'Xatolar', reset: 'Tozalash',
     best: 'Eng yaxshi natija saqlandi', not_done: 'Hali bajarilmagan',
     reset_title: 'Progressni tozalash', reset_text: "Biletlar bo'yicha progress tozalanadi. Natijalar «Arxiv» bo'limiga arxivlanadi, xatolar to'plami qoladi.", reset_ok: 'Tozalash va arxivlash',
-    archive: '🗄 Arxiv', archive_empty: 'Arxiv bo\u2018sh. Progressni tozalagach natijalar (foiz, vaqt) bu yerda abadiy saqlanadi.',
-    topics: '📚 Mavzular', topic_solve: '▶ Mavzuni yechish', dup_badge: 'takrorlar', rephr_badge: 'qayta shakllar',
+    archive: 'Arxiv', archive_empty: 'Arxiv bo\u2018sh. Progressni tozalagach natijalar (foiz, vaqt) bu yerda abadiy saqlanadi.',
+    topics: 'Mavzular', topic_solve: '▶ Mavzuni yechish', dup_badge: 'takrorlar', rephr_badge: 'qayta shakllar',
     topics_sub: (t, d) => t + ' mavzu · ' + d + ' takror guruhi · har bir qiyin joy mavzuda ko\u2018rinadi',
     topic_weak: n => n + ' qiyin',
     archive_sub: n => 'Progress tozalashlar: ' + n + ' · xatolar va vaqt saqlangan',
     archive_back: 'Bosh sahifa',
     q_count: 'savol', details: 'Test tafsilotlari',
     wrong_desc: "Barcha noto'g'ri javob berilgan savollar yig'iladi. To'g'ri javob bersangiz — savol ro'yxatdan o'chadi.",
-    settings: '⚙ Test sozlamalari',
+    settings: 'Test sozlamalari',
     shuf_q: 'Savollarni aralashtirish', shuf_qd: 'Har safar savollar turli tartibda',
     shuf_a: 'Javoblarni aralashtirish', shuf_ad: 'Javob variantlari almashinadi',
     start_test: '▶ Testni boshlash',
     total_q: 'jami savol', repeat_label: 'takrorlashga',
-    srs_title: '🧠 Aqlli takrorlash',
-    marathon_title: '🏃 Marafon',
+    srs_title: 'Aqlli takrorlash',
+    marathon_title: 'Marafon',
     srs_desc: "Interval takrorlash metodika: savollar 10 daqiqa → 1 kun → 3 kun → 7 kun → 30 kun keyin qaytadi. Shunday miya uzoq eslaydi.",
     marathon_desc: "Barcha shablonlardagi savollar. Zaif savollar tez-tez ko'rsatiladi. Nechta savol meni tanlashni tanlang.",
     amount: 'Savollar soni',
     start_repeat: '▶ Takrorlashni boshlash', start_marathon: '▶ Marafonni boshlash',
-    wrong_title: '🛠 Xatolar ustida ishlash',
+    wrong_title: 'Xatolar ustida ishlash',
     slow_btn: '🐢 Sekin', slow_title: '🐢 Sekin o\u2018yilgan savollar',
-    slow_desc: 'Eng ko\u2018p o\u2018ylangan savollaring (⏱ 30 s va ortiq yoki o\u2018rtachadan ikki baravar ko\u2018p). Tez javob bersang — savol o\u2018z-o\u2018zidan ro\u2018yxatdan chiqadi.',
+    slow_desc: 'Eng ko\u2018p o\u2018ylangan savollaring (30 s va ortiq yoki o\u2018rtachadan ikki baravar ko\u2018p). Tez javob bersang — savol o\u2018z-o\u2018zidan ro\u2018yxatdan chiqadi.',
     finish: 'Yakunlash',
     exit_title: 'Testdan chiqilsinmi?', exit_text: 'Bu urinish natijasi saqlanmaydi.', exit_ok: 'Chiqish',
     finish_title: 'Test yakunlansinmi?',
@@ -240,12 +240,12 @@ const I18N = {
     timeout: 'Vaqt tugadi', pass: "O'tdi", fail: "O'tmadi (≥70% kerak)",
     home_btn: 'Shablonlarga', retry: 'Yana bir bor', next_tpl: 'Keyingi shablon →',
     review: 'Javoblar tahlili', expl_lbl: 'Izoh:',
-    stats_title: '📊 Natijalar', right_ans: "to'g'ri javoblar",
+    stats_title: 'Natijalar', right_ans: "to'g'ri javoblar",
     no_wrong: "xatolar yo'q",
     badges_ttl: 'Yutuqlar', by_tpl: 'Shablonlar bo‘yicha',
     badge_first: 'Birinchi test', badge_10: "10 o'tish", badge_clean: 'Xatolarsiz',
     badge_3days: '3 kun seriya', badge_all: 'Barcha 64 shablon',
-    time_res: (m, s) => '⏱ Vaqt: ' + m + ' daqiqa · o\u2018rtacha ' + s + ' s bitta savolga',
+    time_res: (m, s) => 'Vaqt: ' + m + ' daqiqa · o\u2018rtacha ' + s + ' s bitta savolga',
     no_data: "Fayl <b>data.js</b> topilmadi yoki bo'sh.<br>Uni index.html yoniga qo'ying",
     streak_days: n => n + ' kun ketma-ket',
     sub: (n, q) => n + ' shablon · ' + q + ' savol',
@@ -258,7 +258,7 @@ const I18N = {
     wrong_work: n => n + ' xato ustida ishlanmoqda',
     weak: n => n + ' zaif savol',
     of_total: n => n + ' dan',
-    due: n => '🧠 ' + n + ' takrorlashga',
+    due: n => n + ' takrorlashga',
     unanswered: n => 'Javobsiz qoldi: ' + n + '.',
     setup_desc: n => 'Test ' + n + " savoldan iborat. Taymer 25 daqiqa. Javoblar to'g'riligi savolga qaytganda va oxiridagi tahlilda ko'rinadi.",
     letters: 'ABCDEFGH',
@@ -289,7 +289,7 @@ const I18N = {
     stage_current: 'Keyingi bosqich',
     stage_perfect: '100% bajarilgan',
     modes: 'Rejimlar',
-    ai_btn: "🤖 AI yordamchi", ai_title: "AI bilan chat", ai_placeholder: "Bu savol haqida so'rang...", ai_thinking: "AI o'ylayapti...", ai_error: "AI xatosi, keyinroq urinib ko'ring", ai_context_q: "Savol:", ai_context_a: "Sizning javobingiz:", ai_context_correct: "To'g'ri javob:", ai_prompt_hint: "So'rishingiz mumkin: nima uchun bu to'g'ri javob, xato tahlili, o'xshash holatlar, soddalashtirib tushuntirish.", ai_fab_title: "PPD bo'yicha AI yordamchi", ai_general_title: "PPD bo'yicha AI yordamchi", ai_general_placeholder: "PPD haqida istalgan narsani so'rang...", ai_send: "➤", ai_timeout: "AI javob bermadi (timeout). Yana urinib ko'ring.", aa_title: "AI zaif joylar tahlili", aa_morning: "ertalabki", aa_evening: "kechki", aa_loading: "AI progressingizni o'rganmoqda…", aa_weak: "Zaif joylar", aa_plan: "Bugungi reja", aa_train: "▶ Zaif joylarni mashq qilish", aa_error: "Tahlil olib bo'lmadi", aa_fresh: "Tahlilni yangilash", aa_login_cta: "Zaif joylaringizni kuniga 2 marta AI tahlil qilishi uchun akkauntga kiring.",
+    ai_btn: "AI yordamchi", ai_title: "AI bilan chat", ai_placeholder: "Bu savol haqida so'rang...", ai_thinking: "AI o'ylayapti...", ai_error: "AI xatosi, keyinroq urinib ko'ring", ai_context_q: "Savol:", ai_context_a: "Sizning javobingiz:", ai_context_correct: "To'g'ri javob:", ai_prompt_hint: "So'rishingiz mumkin: nima uchun bu to'g'ri javob, xato tahlili, o'xshash holatlar, soddalashtirib tushuntirish.", ai_fab_title: "PPD bo'yicha AI yordamchi", ai_general_title: "PPD bo'yicha AI yordamchi", ai_general_placeholder: "PPD haqida istalgan narsani so'rang...", ai_send: "→", ai_timeout: "AI javob bermadi (timeout). Yana urinib ko'ring.", aa_title: "AI zaif joylar tahlili", aa_morning: "ertalabki", aa_evening: "kechki", aa_loading: "AI progressingizni o'rganmoqda…", aa_weak: "Zaif joylar", aa_plan: "Bugungi reja", aa_train: "Zaif joylarni mashq qilish", aa_error: "Tahlil olib bo'lmadi", aa_fresh: "Tahlilni yangilash", aa_login_cta: "Zaif joylaringizni kuniga 2 marta AI tahlil qilishi uchun akkauntga kiring.",
     auth_title: "Akkaunt", login: "Kirish", register: "Ro'yxatdan o'tish", email: "Email", password: "Parol", logout: "Chiqish", sync: "Sinxronlash", sync_ok: "✓ Progress sinxronlandi", sync_fail: "✗ Sinxronlashda xato", auth_err_email: "Email noto'g'ri", auth_err_pass: "Parol 6 belgidan kamida", auth_err: "Xato: ma'lumotlarni tekshiring", auth_exists: "Bu email allaqachon ro'yxatdan o'tgan", auth_bad: "Email yoki parol noto'g'ri", auth_login_tab: "Kirish", auth_reg_tab: "Ro'yxatdan o'tish", auth_signed: "✓ Kirish bajarildi", auth_bye: "Akkauntdan chiqdingiz", auth_net: "Server bilan aloqa yo'q. Internetni tekshirib, yana urinib ko'ring.", auth_confirm_title: "Kirishni tasdiqlash", auth_confirm_hint: "Progress himoyasi uchun kirishni tasdiqlang — parolni kiriting. Bu haftada bir marta.", auth_skip: "Akkauntsiz davom etish", splash_tagline: "PPD imtihoni treningi", mistakes_focus: n => "Takroriy xatolarga fokus: " + n, repeated_mistakes: n => "Takroriy xatolar: " + n, marathon_focus_note: "Xato qilgan savollaringiz ko'proq va boshida ko'rsatiladi."
   },
 };
@@ -1502,20 +1502,20 @@ function renderHome(){
   const dock =
     '<div class="modedock" id="modedock">' +
       '<span class="glide" id="dockGlide"></span>' +
-      '<button class="modebtn" id="marathonBtn" title="' + esc(t('marathon').replace(/^🏃\s*/, '')) + '"><span class="mi">' + icon('flag') + '</span><span class="mlbl">' + esc(t('marathon').replace(/^🏃\s*/, '')) + '</span><span class="mshort">' + esc(t('m_short')) + '</span>' +
+      '<button class="modebtn" id="marathonBtn" title="' + esc(t('marathon')) + '"><span class="mi">' + icon('flag') + '</span><span class="mlbl">' + esc(t('marathon')) + '</span><span class="mshort">' + esc(t('m_short')) + '</span>' +
         (msave && !msave.srs ? ' <span class="pausedot"><i class="pauseglyph"></i></span>' : '') + '</button>' +
-      '<button class="modebtn accent" id="srsBtn" title="' + esc(t('srs_btn').replace(/^🧠\s*/, '')) + '" ' + (dueN || (msave && msave.srs) ? '' : 'disabled') + '>' +
-        '<span class="mi">' + icon('brain') + '</span><span class="mlbl">' + esc(t('srs_btn').replace(/^🧠\s*/, '')) + '</span><span class="mshort">' + esc(t('s_short')) + '</span>' +
+      '<button class="modebtn accent" id="srsBtn" title="' + esc(t('srs_btn')) + '" ' + (dueN || (msave && msave.srs) ? '' : 'disabled') + '>' +
+        '<span class="mi">' + icon('brain') + '</span><span class="mlbl">' + esc(t('srs_btn')) + '</span><span class="mshort">' + esc(t('s_short')) + '</span>' +
         (dueN ? '<span class="cnt">' + dueN + '</span>' : '') +
         (msave && msave.srs ? ' <span class="pausedot"><i class="pauseglyph"></i></span>' : '') + '</button>' +
-      '<button class="modebtn good" id="wrongBtn" title="' + esc(t('wrong_btn').replace(/^🛠\s*/, '')) + '" ' + (wc ? '' : 'disabled') + '>' +
-        '<span class="mi">' + icon('wrench') + '</span><span class="mlbl">' + esc(t('wrong_btn').replace(/^🛠\s*/, '')) + '</span><span class="mshort">' + esc(t('w_short')) + '</span>' +
+      '<button class="modebtn good" id="wrongBtn" title="' + esc(t('wrong_btn')) + '" ' + (wc ? '' : 'disabled') + '>' +
+        '<span class="mi">' + icon('wrench') + '</span><span class="mlbl">' + esc(t('wrong_btn')) + '</span><span class="mshort">' + esc(t('w_short')) + '</span>' +
         (wc ? '<span class="cnt">' + wc + '</span>' : '') + '</button>' +
-      '<button class="modebtn warn" id="slowBtn" title="' + esc(t('slow_title').replace(/^🐢\s*/, '')) + '" ' + (slowCount() ? '' : 'disabled') + '>' +
-        '<span class="mi">' + icon('clock') + '</span><span class="mlbl">' + esc(t('slow_btn').replace(/^🐢\s*/, '')) + '</span><span class="mshort">' + esc(t('slow_btn').replace(/^🐢\s*/, '').slice(0, 6)) + '</span>' +
+      '<button class="modebtn warn" id="slowBtn" title="' + esc(t('slow_title')) + '" ' + (slowCount() ? '' : 'disabled') + '>' +
+        '<span class="mi">' + icon('clock') + '</span><span class="mlbl">' + esc(t('slow_btn')) + '</span><span class="mshort">' + esc(t('slow_btn').slice(0, 6)) + '</span>' +
         (slowCount() ? '<span class="cnt">' + slowCount() + '</span>' : '') + '</button>' +
-      '<button class="modebtn" id="topicsBtn" title="' + esc(t('topics')) + '"><span class="mi">' + icon('book') + '</span><span class="mlbl">' + esc(t('topics').replace(/^📚\s*/, '')) + '</span><span class="mshort">' + esc((LANG==='uz'?'Mav':'Тем').slice(0,6)) + '</span></button>' +
-      '<button class="modebtn" id="archiveBtn" title="' + esc(t('archive')) + '"><span class="mi">' + icon('archive') + '</span><span class="mlbl">' + esc(t('archive').replace(/^🗄\s*/, '')) + '</span></button>' +
+      '<button class="modebtn" id="topicsBtn" title="' + esc(t('topics')) + '"><span class="mi">' + icon('book') + '</span><span class="mlbl">' + esc(t('topics')) + '</span><span class="mshort">' + esc((LANG==='uz'?'Mav':'Тем').slice(0,6)) + '</span></button>' +
+      '<button class="modebtn" id="archiveBtn" title="' + esc(t('archive')) + '"><span class="mi">' + icon('archive') + '</span><span class="mlbl">' + esc(t('archive')) + '</span></button>' +
       '<button class="modebtn danger" id="resetAll">' + esc(t('reset')) + '</button>' +
     '</div>';
 
@@ -1703,7 +1703,7 @@ function renderMarathon(){
             '<h4><i class="pauseglyph"></i>' + esc(t('resume_title')) + '</h4>' +
             '<div class="sub">' + esc(t('saved_meta')(answered, n, fmtTime(saved.remain||0))) + '</div>' +
             '<div class="sub">' + esc(t('saved_when')(agoText(saved.ts))) + '</div>' +
-            (saved.lang !== LANG ? '<div class="sub warnline">⚠ ' + esc(t('resume_lang_warn')) + '</div>' : '') +
+            (saved.lang !== LANG ? '<div class="sub warnline">' + esc(t('resume_lang_warn')) + '</div>' : '') +
           '</div>' +
           '<div class="row">' +
             '<button class="btn ghost" id="restartM">' + esc(t('restart_btn')) + '</button>' +
@@ -1727,7 +1727,7 @@ function renderMarathon(){
         '<div class="muted" style="font-size:14px">' +
           esc(isSrs ? t('srs_desc') : t('marathon_desc') + ' ' + t('marathon_focus_note')) +
         '</div>' +
-        (weakN ? '<div class="chip bad" style="margin-top:12px;display:inline-block">🔴 ' + esc(t('weak')(weakN)) + '</div>' : '') +
+        (weakN ? '<div class="chip bad" style="margin-top:12px;display:inline-block">' + esc(t('weak')(weakN)) + '</div>' : '') +
         '<div class="chip ' + (repN ? 'bad' : 'good') + '" style="margin-top:12px;display:inline-block;' + (weakN ? 'margin-left:6px' : '') + '">' + esc(t('mistakes_focus')(repN)) + '</div>' +
       '</div>' +
       '<div class="glass panel">' +
@@ -2106,7 +2106,7 @@ function renderResult(){
   const answeredN = state.answers.filter(a=>a!==null).length;
   if(answeredN){
     const avgSec = Math.round(thinkSum/answeredN/1000);
-    timeHTML = '<div class="muted" style="margin-top:4px">' + esc(t('time_res')(spentMin || '<1', avgSec)) + '</div>';
+    timeHTML = '<div class="muted" style="margin-top:4px">' + icon('clock') + ' ' + esc(t('time_res')(spentMin || '<1', avgSec)) + '</div>';
   }
 
   /* среднее время на отвеченный вопрос — чтобы пометить «долгие» (сложные) */
@@ -2128,7 +2128,7 @@ function renderResult(){
     const expl = q.expl ? '<div class="expl"><b>' + esc(t('expl_lbl')) + '</b> ' + esc(q.expl) + '</div>' : '';
     return '<div class="glass qcard">' +
       '<div class="qnum">' + esc(t('q_num')(i+1)) + ' ' + (sel===okIdx ? '<span style="color:var(--good)">✓</span>' : '<span style="color:var(--bad)">✗</span>') +
-      (qtSec > 0 ? '<span class="qtime' + (slowQ ? ' slow' : '') + '">⏱ ' + qtSec + ' с' + (slowQ ? ' 🐢' : '') + '</span>' : '') + '</div>' +
+      (qtSec > 0 ? '<span class="qtime' + (slowQ ? ' slow' : '') + '">' + icon('clock') + ' ' + qtSec + ' с</span>' : '') + '</div>' +
       '<div class="qtext">' + bodyHTML(q.body) + '</div>' +
       '<div class="answers">' + answersHTML + '</div>' +
       expl + '<div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn ai-btn" onclick="openAiChatFromReview(' + i + ')">' + esc(t('ai_btn')) + '</button></div></div>';
@@ -2316,7 +2316,7 @@ function renderStats(){
         '<span class="chip">' + esc(t('right_chip')(correct, total)) + '</span>' +
         '<span class="chip ' + (wc?'bad':'good') + '">' + esc(wc ? t('wrong_work')(wc) : t('no_wrong')) + '</span>' +
         '<span class="chip ' + (repN?'bad':'good') + '">' + esc(t('repeated_mistakes')(repN)) + '</span>' +
-        '<span class="streak">🔥 ' + esc(t('streak_days')(streak)) + '</span>' +
+        '<span class="streak">' + icon('flame') + ' ' + esc(t('streak_days')(streak)) + '</span>' +
         (srsDueCount() ? '<span class="chip" style="border-color:rgba(138,180,248,.4);color:var(--accent)">' + esc(t('due')(srsDueCount())) + '</span>' : '') +
       '</div>' +
     '</div>' +

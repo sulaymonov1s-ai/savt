@@ -477,6 +477,19 @@ body.day .node .body:hover{box-shadow:0 12px 28px rgba(0,0,0,.12), inset 0 1px 0
 }
 .chip.good{color:var(--good);border-color:rgba(52,199,89,.45)}
 .chip.bad{color:var(--bad);border-color:rgba(255,69,58,.45)}
+/* Фирменная кривая easing */
+:root{ --ease: cubic-bezier(.22,1,.36,1); }
+.btn,.modebtn,.ans,.tp-card,.node .cardwrap,.chip{ transition-timing-function:var(--ease) !important; }
+/* Фон сплэша: живой blob */
+.splash-blob{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0; }
+.splash-blob::before{ content:""; position:absolute; width:520px; height:520px; left:50%; top:38%; transform:translate(-50%,-50%); background:radial-gradient(circle at 30% 30%, rgba(66,133,244,.32), rgba(52,199,89,.16) 55%, transparent 72%); border-radius:46% 54% 58% 42% / 48% 42% 58% 52%; filter:blur(28px); animation:blobFloat 9s var(--ease) infinite alternate; }
+.splash-blob::after{ content:""; position:absolute; width:340px; height:340px; left:32%; top:52%; background:radial-gradient(circle at 60% 40%, rgba(138,180,248,.25), transparent 70%); border-radius:58% 42% 46% 54% / 44% 56% 44% 56%; filter:blur(22px); animation:blobFloat 7s var(--ease) infinite alternate-reverse; }
+@keyframes blobFloat{ 0%{ transform:translate(-50%,-50%) scale(1) rotate(0deg);} 100%{ transform:translate(-46%,-56%) scale(1.14) rotate(24deg);} }
+#splash{ position:relative; }
+#splash > *:not(.splash-blob){ position:relative; z-index:1; }
+/* Иконки внутри текстовых чипов */
+.qtime .ico{ width:13px; height:13px; vertical-align:-2px; }
+.streak .ico{ width:15px; height:15px; vertical-align:-2px; color:#fdd663; }
 /* Архив: строки результатов */
 .ar-row{display:flex;justify-content:space-between;gap:10px;padding:6px 2px;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
 .ar-row:last-child{border-bottom:none}
@@ -1213,6 +1226,7 @@ body.day .sidemenu .mitem:hover .ico{ filter:drop-shadow(0 0 5px rgba(10,132,255
 </head>
 <body>
 <div id="splash" aria-hidden="true">
+  <div class="splash-blob"></div>
   <img class="splash-logo" src="logo.png" alt="SAVT">
   <div class="splash-title"><span>S</span><span>A</span><span>V</span><span>T</span></div>
   <div class="sub splash-tagline" id="splashTagline"></div>
@@ -1256,6 +1270,6 @@ body.day .sidemenu .mitem:hover .ico{ filter:drop-shadow(0 0 5px rgba(10,132,255
 
 <script defer src="topics.js?v=202611171000"></script>
 <script defer src="data.js?v=202611171000"></script>
-<script defer src="app.js?v=202611171000"></script>
+<script defer src="app.js?v=202611181000"></script>
 </body>
 </html>
