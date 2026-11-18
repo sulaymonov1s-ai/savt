@@ -1320,7 +1320,7 @@ function go(name, params){
   const app = $('#app');
   app.classList.add('pt-out');
   /* быстрее смена экрана: 60мс на телефоне, 100мс на ПК */
-  const PT_DELAY = (typeof IS_MOBILE !== 'undefined' && IS_MOBILE) ? 60 : 100;
+  const PT_DELAY = (typeof IS_MOBILE !== 'undefined' && IS_MOBILE) ? 170 : 190;
   setTimeout(()=>{
     state = Object.assign({ timerId:null }, params||{});
     routes[name]();
