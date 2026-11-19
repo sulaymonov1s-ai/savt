@@ -548,11 +548,20 @@ function buildAnalysisSummary(){
       const q = tt ? tt.questions[+parts[1]] : null;
       return { t: tt ? t('tpl_name')(tt.name) : ('№' + parts[0]), c: e[1].c, q: q ? plainBody(q.body).slice(0, 60) : '' };
     });
+  /* 🐢 топ долгих раздумий + карта ошибок целиком (включая «архивные» — копилка ошибок переживает сброс) */
+  const slData = loadSlow();
+  const slowTop = Object.entries(slData).map(([tid, obj])=> Object.entries(obj).map(([oi, sec])=>{
+    const tt = D[tid]; const q = tt ? tt.questions[+oi] : null;
+    return { t: tt ? t('tpl_name')(tt.name) : ('№'+tid),
+             q: q ? plainBody(q.body).slice(0, 60) : '', sec: sec };
+  })).flat().sort((a,b)=> b.sec - a.sec).slice(0, 5);
+  const errMap = buildErrorMapBlock(LANG);
   return {
     answeredTotal: total, correctTotal: correct, pct: total ? Math.round(correct/total*100) : 0,
     wrongCount: wrongCount(), dueCount: srsDueCount(),
     repeatedCount: Object.values(mistakes).filter(m=> (m.c||0) >= 2).length,
     templates: templates, topMistakes: topMistakes, repeatedQuestions: repeatedQuestions,
+    slowTop: slowTop, errorMap: errMap,
     recent: hist.slice(-7).map(h=> ({ p: Math.round(h.c/h.t*100), ts: h.ts }))
   };
 }
@@ -801,9 +810,18 @@ function srsRight(tplId, orig){
   const k = srsKey(tplId, orig);
   const e = s[k];
   if(!e) return;
-  e.stage = Math.min((e.stage||0) + 1, SRS_STEPS.length);
-  e.next = Date.now() + (SRS_STEPS[e.stage-1] || SRS_STEPS[SRS_STEPS.length-1]);
-  if(e.stage >= SRS_STEPS.length) delete s[k];
+  /* 🐢-вопросы (долгие раздумья) — интервальный повтор ЧАЩЕ: stage растёт через раз, интервал вдвое короче */
+  const slBook = loadSlow();
+  const isSlowQ = slBook[tplId] && slBook[tplId][orig] !== undefined;
+  if(isSlowQ){
+    e.rep = (e.rep || 0) + 1;
+    if(e.rep % 2 === 0) e.stage = Math.min((e.stage||0) + 1, SRS_STEPS.length);
+  } else {
+    e.stage = Math.min((e.stage||0) + 1, SRS_STEPS.length);
+  }
+  const baseInt = SRS_STEPS[Math.max(0,(e.stage||1)-1)] || SRS_STEPS[SRS_STEPS.length-1];
+  e.next = Date.now() + (isSlowQ ? Math.round(baseInt * 0.5) : baseInt);
+  if(e.stage >= SRS_STEPS.length && !isSlowQ) delete s[k];
   else s[k] = e;
   saveSRS(s);
 }
@@ -873,6 +891,35 @@ function formatBaseHitsForPrompt(hits, lang) {
   return head + '\n' + body + rule;
 }
 
+/* Полная карта ошибок: копилка + повторные + 🐢 + архив */
+function buildErrorMapBlock(lang){
+  const w = loadWrong(), m = loadMistakes(), sl = loadSlow(), D = data();
+  const seen = new Set(), rows = [];
+  const touch = (tid, oi) => {
+    const k = tid + ':' + oi;
+    if(seen.has(k)) return; seen.add(k);
+    const tt = D[tid]; const q = tt ? tt.questions[oi] : null;
+    if(!q) return;
+    const text = (q.body||[]).filter(b=>b.text).map(b=>b.text).join(' ').slice(0, 70);
+    rows.push({ tid: Number(tid), text: text, c: (m[k] && m[k].c) || (w[tid] && w[tid][oi] !== undefined ? 1 : 0), slow: (sl[tid] && sl[tid][oi]) || 0 });
+  };
+  Object.keys(m).forEach(k=>{ const p=k.split(':'); touch(p[0], +p[1]); });
+  Object.keys(w).forEach(tid=>Object.keys(w[tid]).forEach(oi=>touch(tid, +oi)));
+  Object.keys(sl).forEach(tid=>Object.keys(sl[tid]).forEach(oi=>touch(tid, +oi)));
+  rows.sort((a,b)=> (b.c*100 + b.slow) - (a.c*100 + a.slow));
+  const arc = loadArchive();
+  const last = arc.length ? arc[arc.length-1] : null;
+  const wrongTotal = Object.values(w).reduce((n,o)=>n+Object.keys(o).length, 0);
+  if(!rows.length && !arc.length) return '';
+  let out = lang === 'uz' ? ' XATOLAR XARITASI: ' : ' КАРТА ОШИБОК ПОЛЬЗОВАТЕЛЯ: ';
+  out += 'в копилке ' + wrongTotal + ' ошибочных вопросов, 🐢-вопросов ' + slowCount() + ', сбросов прогресса ' + arc.length + (last ? ' (последний: средний ' + last.avg + '% по ' + last.items.length + ' билетам)' : '') + '. ';
+  if(rows.length){
+    out += lang === 'uz' ? 'Eng muammoli savollar: ' : 'Самые проблемные вопросы: ';
+    out += rows.slice(0, 10).map(r=> '[Билет ' + r.tid + '] ' + r.text + (r.c ? ' (ошибок: ' + r.c + ')' : '') + (r.slow ? ' (думал ' + r.slow + ' с)' : '')).join(' | ');
+    out += lang === 'uz' ? '. Bu savollarni birinchi navbatda tushuntir.' : '. Эти вопросы объясняй в первую очередь и связывай ответ с ними.';
+  }
+  return out;
+}
 function buildAiMessages(context, userQuestion) {
   const general = !context;
   const lang = context ? (context.lang || LANG) : LANG;
@@ -897,16 +944,19 @@ function buildAiMessages(context, userQuestion) {
         ? ' FOYDALANUVCHI STATISTIKASI: o\u2018rtacha ' + totalAvg + ' s bitta savolga o\u2018ylaydi; eng ko\u2018p o\u2018ylaydigan biletlari: ' + top + '. Shuni hisobga olib, shu biletlar mavzularini ko\u2018proq tushuntir.'
         : ' СТАТИСТИКА ПОЛЬЗОВАТЕЛЯ: в среднем думает ' + totalAvg + ' с на вопрос; дольше всего размышляет над: ' + top + '. Учитывай это: на эти билеты/темы делай акцент в объяснениях.';
     }
+    timeBlock += buildErrorMapBlock(lang);
   }
+  const FORMAT_RULE_RU = " Оформляй ответ в Markdown: для сравнения вариантов, правил и списков используй таблицы (| a | b |) и маркированные списки. Не оборачивай ответ в кавычки, код-блоки ``` или лишние скобки. Без вступлений вроде «Конечно!» и без прощаний — сразу по делу. Пиши компактно.";
+  const FORMAT_RULE_UZ = " Javobni Markdown formatida yoz: variantlarni, qoidalarni va ro\u2018yxatlarni jadval (| a | b |) va ro\u2018yxatlar orqali ber. Javobni qo\u2018shtirnoq, ``` kod-blok yoki ortiqcha qavslarga o\u2018rama. \u00abAlbatta!\u00bb kabi kirish va xayrlashuvlarsiz \u2014 to\u2018g\u2018ridan-to\u2018g\u2018ri javob. Qisqa va aniq yoz.";
   const BASE_KNOWLEDGE_RU = " Ты знаешь всю базу тренажёра: 66 билетов по 20 вопросов (всего ~1300 вопросов ПДД Узбекистана). На вопросы вида «в каком билете …» отвечай точным номером билета и цитатой вопроса, опираясь на справку из базы ниже.";
   const BASE_KNOWLEDGE_UZ = " Sen treningyor bazasini to\u2018liq bilasan: 66 bilet, har birida 20 savol (~1300 PPD savoli). «Qaysi biletda …» degan savollarga bazadan olingan ma\u2019lumot asosida aniq bilet raqami va savol bilan javob ber.";
   const sysPrompt = general
     ? ((lang === 'uz')
-      ? "Sen — do'stona PPD (yo'l harakati xavfsizligi) o'qituvchisisiz. Foydalanuvchi imtihonga tayyorlanadi. Javoblar qisqa, aniq va tushunarli bo'lsin. Murakkab qoidalarni sodda misollar bilan tushuntiring." + BASE_KNOWLEDGE_UZ + baseBlock + timeBlock + SECRET_RULE_UZ
-      : "Ты — дружелюбный преподаватель ПДД Узбекистана. Пользователь готовится к экзамену. Отвечай кратко, понятно и по делу. Сложные правила объясняй простыми словами и примерами из жизни. Если спрашивают про знак или ситуацию — уточняй, что изображено, если картинка приложена." + BASE_KNOWLEDGE_RU + baseBlock + timeBlock + SECRET_RULE_RU)
+      ? "Sen — do'stona PPD (yo'l harakati xavfsizligi) o'qituvchisisiz. Foydalanuvchi imtihonga tayyorlanadi. Javoblar qisqa, aniq va tushunarli bo'lsin. Murakkab qoidalarni sodda misollar bilan tushuntiring." + BASE_KNOWLEDGE_UZ + baseBlock + timeBlock + FORMAT_RULE_UZ + SECRET_RULE_UZ
+      : "Ты — дружелюбный преподаватель ПДД Узбекистана. Пользователь готовится к экзамену. Отвечай кратко, понятно и по делу. Сложные правила объясняй простыми словами и примерами из жизни. Если спрашивают про знак или ситуацию — уточняй, что изображено, если картинка приложена." + BASE_KNOWLEDGE_RU + baseBlock + timeBlock + FORMAT_RULE_RU + SECRET_RULE_RU)
     : ((lang === 'uz')
-      ? "Sen O'zbekistonda PPD (yo'l harakati xavfsizligi) imtihoniga tayyorlanayotgan haydovchi uchun yordamchisisiz. Javobaringiz qisqa, aniq va foydali bo'lishi kerak. Kontekst: savol matni, foydalanuvchi javobi, to'g'ri javob va rasm (agar bo'lsa). Foydalanuvchi savolga javob bering, xatolarni tahlil qiling, yoki oddiroq tushuntiring. Savolga ketgan vaqt katta bo'lsa (30 s va ortiq) — savol qiyin bo'lgan: uni batafsil tushuntiring va yodlash uchun oson mnemonika bering." + BASE_KNOWLEDGE_UZ + baseBlock + SECRET_RULE_UZ
-      : "Ты — помощник для подготовки к экзамену ПДД в Узбекистане. Отвечай кратко, точно и полезно. Контекст: текст вопроса, ответ пользователя, правильный ответ и изображение (если есть). Отвечай на вопрос пользователя, анализируй ошибки или объясни проще. Учитывай детали на картинке: знаки, разметку, участников движения. Если время на вопрос большое (30 с и больше) — вопрос оказался сложным: объясни его особенно подробно и дай простую мнемонику для запоминания." + BASE_KNOWLEDGE_RU + baseBlock + SECRET_RULE_RU);
+      ? "Sen O'zbekistonda PPD (yo'l harakati xavfsizligi) imtihoniga tayyorlanayotgan haydovchi uchun yordamchisisiz. Javobaringiz qisqa, aniq va foydali bo'lishi kerak. Kontekst: savol matni, foydalanuvchi javobi, to'g'ri javob va rasm (agar bo'lsa). Foydalanuvchi savolga javob bering, xatolarni tahlil qiling, yoki oddiroq tushuntiring. Savolga ketgan vaqt katta bo'lsa (30 s va ortiq) — savol qiyin bo'lgan: uni batafsil tushuntiring va yodlash uchun oson mnemonika bering." + BASE_KNOWLEDGE_UZ + baseBlock + timeBlock + FORMAT_RULE_UZ + SECRET_RULE_UZ
+      : "Ты — помощник для подготовки к экзамену ПДД в Узбекистане. Отвечай кратко, точно и полезно. Контекст: текст вопроса, ответ пользователя, правильный ответ и изображение (если есть). Отвечай на вопрос пользователя, анализируй ошибки или объясни проще. Учитывай детали на картинке: знаки, разметку, участников движения. Если время на вопрос большое (30 с и больше) — вопрос оказался сложным: объясни его особенно подробно и дай простую мнемонику для запоминания." + BASE_KNOWLEDGE_RU + baseBlock + timeBlock + FORMAT_RULE_RU + SECRET_RULE_RU);
 
   const textBlock = general
     ? userQuestion
@@ -1332,6 +1382,41 @@ function go(name, params){
 }
 
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+/* ---------- МИНИ-MARKDOWN для ответов ИИ (таблицы, bold, списки) ---------- */
+function mdInline(s){
+  return s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<code>$1</code>');
+}
+function mdToHtml(src){
+  const lines = String(src||'').replace(/\r/g,'').split('\n');
+  let html = '', table = [], inList = false;
+  const flushList = ()=>{ if(inList){ html += '</ul>'; inList = false; } };
+  const flushTable = ()=>{
+    if(!table.length) return;
+    const rows = table.filter(r=> !/^\s*\|?[\s:\-|]+\|?\s*$/.test(r));
+    if(rows.length){
+      const cells = r => r.replace(/^\s*\|/,'').replace(/\|\s*$/,'').split('|').map(c=> mdInline(c.trim()));
+      html += '<table><thead><tr>' + cells(rows[0]).map(c=>'<th>'+c+'</th>').join('') + '</tr></thead><tbody>';
+      rows.slice(1).forEach(r=>{ html += '<tr>' + cells(r).map(c=>'<td>'+c+'</td>').join('') + '</tr>'; });
+      html += '</tbody></table>';
+    }
+    table = [];
+  };
+  lines.forEach(ln=>{
+    if(/^\s*\|.*\|\s*$/.test(ln)){ flushList(); table.push(ln); return; }
+    flushTable();
+    if(/^\s*-\s+/.test(ln)){
+      if(!inList){ html += '<ul>'; inList = true; }
+      html += '<li>' + mdInline(ln.replace(/^\s*-\s+/,'')) + '</li>';
+      return;
+    }
+    flushList();
+    if(/^\s*#{1,4}\s+/.test(ln)){ html += '<div class="md-h">' + mdInline(ln.replace(/^\s*#{1,4}\s+/,'')) + '</div>'; return; }
+    if(!ln.trim()){ return; }
+    html += '<div>' + mdInline(ln) + '</div>';
+  });
+  flushTable(); flushList();
+  return html;
+}
 function bodyHTML(parts, only){
   return (parts||[]).filter(p=>{
     if(only === 'text') return !p.img;
@@ -1798,7 +1883,8 @@ function startSession(opts){
     const m = loadMistakes();
     const now = Date.now();
     /* вес вопроса: повторные ошибки (c>=2) — 3, одна ошибка — 1.5, остальные — 1 */
-    const wOf = it =>{ const e = m[it.tplId + ':' + it.orig]; const c = e ? (e.c||0) : 0; return c >= 2 ? 3 : c === 1 ? 1.5 : 1; };
+    const slB = loadSlow();
+    const wOf = it =>{ const e = m[it.tplId + ':' + it.orig]; const c = e ? (e.c||0) : 0; const isSl = slB[it.tplId] && slB[it.tplId][it.orig] !== undefined; const base = c >= 2 ? 3 : c === 1 ? 1.5 : 1; return isSl ? Math.max(base, 2.5) : base; };
     /* взвешенный порядок: перемешанный — weight * random desc;
        если shufQ выключен — только сортировка по весу desc, без случайности */
     const weighted = arr => opts.shufQ
@@ -2441,6 +2527,10 @@ function sendAiMessage() {
       // Done
       aiChatHistory.push({ role: 'user', content: text });
       aiChatHistory.push({ role: 'assistant', content: fullText });
+      botMsg.classList.add('md-body');
+      botMsg.innerHTML = mdToHtml(fullText);
+      const c2 = $('#aiMessages');
+      if(c2) c2.scrollTop = c2.scrollHeight;
       input.disabled = false;
       sendBtn.disabled = false;
       sendBtn.textContent = t('ai_send');
